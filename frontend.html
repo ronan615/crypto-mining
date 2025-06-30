@@ -1,0 +1,2407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Mining Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #1a202c;
+            --bg-secondary: #2d3748;
+            --text-primary: #e2e8f0;
+            --text-secondary: #cbd5e0;
+            --accent-blue: #63b3ed;
+            --accent-green: #48bb78;
+            --accent-orange: #f6ad55;
+            --accent-purple: #9f7aea;
+            --accent-red: #e53e3e;
+            --border-color: #4a5568;
+            --card-bg: #2d3748;
+            --input-bg: #4a5568;
+            --input-border: #718096;
+            --log-bg: #1a202c;
+            --modal-bg: #2d3748;
+        }
+
+        .theme-light {
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --accent-blue: #3182ce;
+            --accent-green: #38a169;
+            --accent-orange: #dd6b20;
+            --accent-purple: #805ad5;
+            --accent-red: #c53030;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+            --input-bg: #edf2f7;
+            --input-border: #cbd5e0;
+            --log-bg: #f7fafc;
+            --modal-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2rem;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: var(--bg-secondary);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            transition: background-color 0.3s ease-in-out;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+        }
+        .wallet {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-green);
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .wallet i {
+            color: var(--text-secondary);
+        }
+        .level-container {
+            background-color: var(--input-bg);
+            border-radius: 9999px;
+            padding: 0.5rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease-in-out;
+        }
+        .level-number {
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+        }
+        .level-progress-container {
+            flex-grow: 1;
+            background-color: var(--input-border);
+            border-radius: 9999px;
+            height: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .level-progress-bar {
+            height: 100%;
+            background-color: #667eea;
+            border-radius: 9999px;
+            transition: width 0.3s ease-in-out;
+        }
+        .level-progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            transition: border-bottom-color 0.3s ease-in-out;
+        }
+        .tab-btn {
+            background-color: transparent;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s, border-bottom 0.2s, transform 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn:hover {
+            color: var(--text-primary);
+            border-bottom-color: var(--input-border);
+            transform: translateY(-2px);
+        }
+        .tab-btn.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        .tab-pane {
+            display: none;
+            padding-top: 1rem;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-purple);
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .btn.primary {
+            background-color: #4299e1;
+            color: white;
+        }
+        .btn.primary:hover {
+            background-color: #3182ce;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .btn.primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .btn.danger {
+            background-color: #f56565;
+            color: white;
+        }
+        .btn.danger:hover {
+            background-color: #e53e3e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .btn.danger:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .btn.secondary {
+            background-color: #a0aec0;
+            color: white;
+        }
+        .btn.secondary:hover {
+            background-color: #718096;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .btn.secondary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        input[type="number"], input[type="text"], select {
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            color: var(--text-primary);
+            width: 100%;
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+
+        .log-container {
+            background-color: var(--log-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            height: 150px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+        .log-entry {
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        .log-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .log-container::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+        }
+        .log-container::-webkit-scrollbar-thumb {
+            background: var(--input-bg);
+            border-radius: 10px;
+        }
+        .log-container::-webkit-scrollbar-thumb:hover {
+            background: var(--input-border);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-content {
+            background-color: var(--modal-bg);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease-in-out;
+        }
+        .modal-close-btn {
+            background-color: var(--accent-red);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .modal-close-btn:hover {
+            background-color: #e53e3e;
+        }
+        .tutorial-modal-content {
+            background-color: var(--modal-bg);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease-in-out;
+            text-align: left;
+        }
+        .tutorial-modal-content h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .tutorial-modal-content p {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+        .tutorial-modal-content ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        .tutorial-modal-content ul li {
+            margin-bottom: 0.5rem;
+        }
+        .tutorial-modal-content strong {
+            color: var(--text-primary);
+        }
+        .tutorial-modal-content .modal-close-btn {
+            margin-top: 1.5rem;
+        }
+
+        .crypto-selection {
+            margin-bottom: 2rem;
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease-in-out;
+        }
+        .crypto-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+        .crypto-card {
+            background-color: var(--input-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+            border: 2px solid transparent;
+        }
+        .crypto-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.2);
+            background-color: var(--input-border);
+        }
+        .crypto-card.selected {
+            border-color: var(--accent-blue);
+            background-color: var(--accent-blue);
+            animation: pulse 1s infinite alternate;
+        }
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.03); }
+        }
+        .crypto-card img {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 0.5rem;
+        }
+        .crypto-card span {
+            display: block;
+            font-weight: 600;
+        }
+
+        .mining-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease-in-out, transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.2);
+        }
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .stat-row {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .electricity-bill-container {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 1.5rem;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .bill-header h3 {
+            color: var(--accent-orange);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .bill-amount {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--accent-orange);
+            margin-bottom: 1rem;
+        }
+        .bill-info div {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .power-status {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        .power-meter {
+            background-color: var(--input-bg);
+            border-radius: 9999px;
+            height: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+            width: 80%;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .power-usage-bar {
+            height: 100%;
+            background-color: var(--accent-red);
+            border-radius: 9999px;
+            transition: width 0.3s ease-in-out;
+        }
+        .power-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+        .power-cost {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 0.75rem;
+        }
+
+        .mining-progress {
+            margin-top: 2rem;
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease-in-out;
+        }
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .progress-bar-container {
+            background-color: var(--input-bg);
+            border-radius: 9999px;
+            height: 1rem;
+            overflow: hidden;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-green);
+            border-radius: 9999px;
+            width: 0%;
+            transition: width 0.3s ease-in-out;
+        }
+        .mining-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        .mining-controls input {
+            flex-grow: 1;
+            min-width: 150px;
+        }
+
+        .hardware-categories {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .category-btn {
+            background-color: var(--input-bg);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .category-btn.active, .category-btn:hover {
+            background-color: var(--accent-blue);
+            color: white;
+        }
+
+        .hardware-inventory, .hardware-shop, .settings-section, .market-section-container {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease-in-out;
+        }
+        .buy-multiple {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .hardware-shop .buy-multiple {
+            margin-top: 1.5rem;
+        }
+        .inventory-container, .shop-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            transition: border-color 0.3s ease-in-out;
+        }
+        .inventory-container::-webkit-scrollbar, .shop-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .inventory-container::-webkit-scrollbar-track, .shop-container::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+        }
+        .inventory-container::-webkit-scrollbar-thumb, .shop-container::-webkit-scrollbar-thumb {
+            background: var(--input-bg);
+            border-radius: 10px;
+        }
+        .inventory-container::-webkit-scrollbar-thumb:hover, .shop-container::-webkit-scrollbar-thumb:hover {
+            background: var(--input-border);
+        }
+
+        .hardware-card {
+            background-color: var(--input-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease-in-out;
+            position: relative;
+        }
+        .hardware-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .hardware-card.available {
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .hardware-card.available:hover {
+            border-color: var(--accent-blue);
+        }
+        .hardware-card.selected-shop-item {
+            border-color: var(--accent-blue);
+            background-color: var(--accent-blue);
+            animation: pulse 1s infinite alternate;
+        }
+        .hardware-card .hw-name {
+            font-weight: 600;
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        .hardware-card .hw-type {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+        .hardware-card .hw-stats {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        .hardware-card .hw-stats div {
+            margin-bottom: 0.25rem;
+        }
+        .hardware-card .hw-cost {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-orange);
+            margin-top: 1rem;
+        }
+        .hardware-card .hw-quantity {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--accent-green);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .inventory-stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            transition: border-top-color 0.3s ease-in-out;
+        }
+        .inv-stat {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .inv-stat span:first-child {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .market-charts {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease-in-out;
+        }
+        .chart-slideshow-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            position: relative;
+            width: 100%;
+            height: 300px;
+        }
+        .chart-slideshow-wrapper .chart-container {
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+        }
+        .chart-slideshow-wrapper .chart-container canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .chart-slideshow-wrapper button {
+            z-index: 10;
+        }
+
+        .market-assets, .trading-panel {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease-in-out;
+        }
+        .assets-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            padding-bottom: 1rem;
+        }
+        .asset-card {
+            background-color: var(--input-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease-in-out, transform 0.2s, box-shadow 0.2s;
+        }
+        .asset-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .asset-card .asset-symbol {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .asset-card .asset-amount {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+        .asset-card .asset-price {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        .trade-form {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .trade-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .trade-buttons button {
+            flex-grow: 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .stats-card {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease-in-out, transform 0.2s, box-shadow 0.2s;
+        }
+        .stats-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.2);
+        }
+        .stats-list .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+        }
+        .stats-list .stat-item span:last-child {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .shares-console, .leaderboard, .achievements-list {
+            background-color: var(--log-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            height: 150px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            margin-top: 1rem;
+            color: var(--text-secondary);
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+        .shares-console {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            color: #00ff00;
+        }
+        .shares-console::-webkit-scrollbar, .leaderboard::-webkit-scrollbar, .achievements-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .shares-console::-webkit-scrollbar-track, .leaderboard::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+        }
+        .shares-console::-webkit-scrollbar-thumb, .leaderboard::-webkit-scrollbar-thumb {
+            background: var(--input-bg);
+            border-radius: 10px;
+        }
+        .shares-console::-webkit-scrollbar-thumb:hover, .leaderboard::-webkit-scrollbar-thumb:hover {
+            background: var(--input-border);
+        }
+        .leaderboard div {
+            padding: 0.25rem 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .leaderboard div:last-child {
+            border-bottom: none;
+        }
+        .achievement-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent-green);
+            font-weight: 500;
+        }
+        .achievement-item.locked {
+            color: var(--text-secondary);
+        }
+        .achievement-item i {
+            font-size: 1.2rem;
+        }
+        .save-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        #notification-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: flex-end;
+        }
+        .notification {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideIn 0.3s forwards, fadeOut 0.5s 2.5s forwards;
+            min-width: 200px;
+            text-align: center;
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateX(100%); }
+        }
+
+        .settings-option {
+            margin-bottom: 1.5rem;
+        }
+        .settings-option label {
+            display: block;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+        .settings-input-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .settings-input-group input {
+            flex-grow: 1;
+            min-width: 200px;
+        }
+        .theme-selector button {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            border: 1px solid var(--border-color);
+        }
+        .theme-selector button.active, .theme-selector button:hover {
+            background-color: var(--accent-blue);
+            color: white;
+        }
+
+        .hardware-group {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background-color: var(--card-bg);
+        }
+
+        .hardware-group h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--accent-purple);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .hardware-group-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+    </style>
+</head>
+<body class="theme-dark">
+    <div class="container">
+        <header>
+            <h1>Crypto Mining Simulator</h1>
+            <div class="wallet">
+                <i class="fas fa-wallet"></i>
+                <span id="wallet-usd">$10000.00</span>
+                <span id="wallet-btc">0.00000000 BTC</span>
+                <span id="wallet-eth">0.00000000 ETH</span>
+                <span id="wallet-doge">0.00000000 DOGE</span>
+                <span id="wallet-ltc">0.00000000 LTC</span>
+                <span id="wallet-xmr">0.00000000 XMR</span>
+            </div>
+            <div class="level-container" id="level-display">
+                <div class="level-number">Level <span id="player-level">1</span></div>
+                <div class="level-progress-container">
+                    <div class="level-progress-bar" id="level-progress-bar" style="width: 0%"></div>
+                    <div class="level-progress-text"><span id="current-xp">0</span> / <span id="next-level-xp">100</span> XP</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="mining">Mining</button>
+            <button class="tab-btn" data-tab="hardware">Hardware</button>
+            <button class="tab-btn" data-tab="stats">Stats</button>
+            <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
+            <button class="tab-btn" data-tab="settings">Settings</button>
+        </div>
+
+        <div class="tab-content">
+            <div id="mining" class="tab-pane active">
+                <div class="crypto-selection">
+                    <h2>Select Cryptocurrency</h2>
+                    <div class="crypto-cards" id="crypto-list">
+
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div class="stat-card">
+                        <div class="stat-title">Currently Mining</div>
+                        <div class="stat-value" id="current-crypto-mining">None</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Hash Rate</div>
+                        <div class="stat-value" id="current-hash-rate">0 H/s</div>
+                    </div>
+                </div>
+
+                <div class="electricity-bill-container" id="electricity-bill">
+                    <div class="bill-header">
+                        <h3>Electricity Bill</h3>
+                    </div>
+                    <div class="bill-amount" id="current-bill-amount">$0.00</div>
+                    <div class="bill-info">
+                        <div>Rate: <span id="bill-rate">$0.15/kWh</span></div>
+                        <div>Next billing: <span id="next-billing-time">-</span></div>
+                    </div>
+                </div>
+
+                <div class="power-status">
+                    <h3 class="text-center mb-4">Power Consumption</h3>
+                    <div class="power-meter" id="power-meter">
+                        <div class="power-usage-bar" id="power-usage-bar" style="width: 0%"></div>
+                        <div class="power-text"><span id="power-consumed">0</span>W / <span id="power-capacity">0</span>W</div>
+                    </div>
+                    <div class="power-cost">
+                        <span>Daily Electricity Cost:</span>
+                        <span id="daily-electricity-cost">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="mining-progress">
+                    <div class="progress-info">
+                        <span>Mining Progress</span>
+                        <span id="progress-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="mining-progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="mining-controls">
+                    <button id="start-mining-btn" class="btn primary">Start Mining</button>
+                    <button id="stop-mining-btn" class="btn danger" disabled>Stop Mining</button>
+                    <input type="text" placeholder="Type your code here" id="redeem-code-input">
+                    <button class="btn primary" id="redeem-code-btn">Redeem Code</button>
+                </div>
+
+                <div class="mining-log">
+                    <h3>Mining Log</h3>
+                    <div class="log-container" id="activity-log">
+                        <div class="log-entry">Welcome to Crypto Mining Simulator!</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="hardware" class="tab-pane">
+                <h2>Hardware Shop</h2>
+                <div class="hardware-categories">
+                    <button class="category-btn active" data-category="all">All</button>
+                    <button class="category-btn" data-category="gpu">GPUs</button>
+                    <button class="category-btn" data-category="asic">ASIC Miners</button>
+                    <button class="category-btn" data-category="cooling">Cooling</button>
+                    <button class="category-btn" data-category="power">Power Supply</button>
+                </div>
+
+                <div class="hardware-inventory">
+                    <h3>Your Hardware (<span id="total-owned-hardware">0</span>)</h3>
+                    <div id="inventory-grouped-container">
+                        <!-- Hardware groups will be rendered here -->
+                    </div>
+                    <div class="inventory-stats">
+                        <div class="inv-stat">
+                            <span>Total GPU Hash Rate:</span>
+                            <span id="total-gpu-hash-rate">0 MH/s</span>
+                        </div>
+                        <div class="inv-stat">
+                            <span>Total ASIC Hash Rate:</span>
+                            <span id="total-asic-hash-rate">0 TH/s</span>
+                        </div>
+                        <div class="inv-stat">
+                            <span>Total Power Usage:</span>
+                            <span id="total-power-usage-rig">0 W</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hardware-shop">
+                    <h3>Available Hardware</h3>
+                    <div class="buy-multiple">
+                        <button id="buy-1x-btn" class="btn primary">Buy 1x</button>
+                        <button id="buy-100x-btn" class="btn primary">Buy 100x</button>
+                        <button id="buy-1000x-btn" class="btn primary">Buy 1000x</button>
+                    </div>
+                    <div id="shop-grouped-container">
+                        <!-- Shop hardware groups will be rendered here -->
+                    </div>
+                </div>
+
+                <div class="market-section-container">
+                    <h2>Crypto Market</h2>
+
+                    <div class="market-charts">
+                        <h3>Price Trends</h3>
+                        <div class="chart-slideshow-wrapper">
+                            <button id="prev-chart-btn" class="btn secondary px-2 py-1" disabled><i class="fas fa-chevron-left"></i></button>
+                            <div class="chart-container" id="chart-slideshow-container">
+                                
+                            </div>
+                            <button id="next-chart-btn" class="btn secondary px-2 py-1" disabled><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="market-assets">
+                        <h3>Your Assets</h3>
+                        <div class="assets-container" id="assets-container">
+
+                        </div>
+                    </div>
+
+                    <div class="trading-panel">
+                        <h3>Trade Cryptocurrencies</h3>
+                        <div class="form-group">
+                            <label for="trade-crypto-select">Cryptocurrency</label>
+                            <select id="trade-crypto-select">
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="trade-amount">Amount</label>
+                            <input type="number" id="trade-amount" min="0" step="0.0001" value="0.001">
+                        </div>
+                        <div class="trade-buttons">
+                            <button id="buy-crypto-btn" class="btn primary">Buy</button>
+                            <button id="sell-crypto-btn" class="btn secondary">Sell</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="stats" class="tab-pane">
+                <h2>Statistics</h2>
+
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <h3>Mining Stats</h3>
+                        <div class="stats-list">
+                            <div class="stat-item">
+                                <span>Total Mined:</span>
+                                <span id="total-mined">0 coins</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Mining Time:</span>
+                                <span id="mining-time">0 hours</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Energy Used:</span>
+                                <span id="energy-used">0 kWh</span>
+                            </div>
+                        </div>
+                        <div class="mining-shares">
+                            <h3>Mining Shares Console</h3>
+                            <div class="shares-console" id="shares-console">
+                                <div class="share-line">Waiting for mining to start...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-card">
+                        <h3>Financial Stats</h3>
+                        <div class="stats-list">
+                            <div class="stat-item">
+                                <span>Total Earnings:</span>
+                                <span id="total-earnings">$0.00</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Hardware Investment:</span>
+                                <span id="hardware-investment">$0.00</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Net Profit:</span>
+                                <span id="net-profit">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-card">
+                        <h3>Achievements</h3>
+                        <div class="achievements-list" id="achievements-list">
+                        </div>
+                    </div>
+
+                    <div class="stats-card">
+                        <h3>Game Information</h3>
+                        <div class="stats-list">
+                            <div class="stat-item">
+                                <span>Play Time:</span>
+                                <span id="play-time">0 minutes</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Time Elapsed (Overall):</span>
+                                <span id="time-elapsed">0 days, 0 hours</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Save Date:</span>
+                                <span id="save-date">Never</span>
+                            </div>
+                        </div>
+                        <div class="save-controls">
+                            <button id="save-game-btn" class="btn primary">Save Game</button>
+                            <button id="reset-game-btn" class="btn danger">Reset Game</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="leaderboard" class="tab-pane">
+                <h2>Global Leaderboard</h2>
+                <div class="leaderboard-section settings-section">
+                    <div id="leaderboard-container" class="leaderboard">
+                        <p class="text-center text-gray-400">Loading leaderboard...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings" class="tab-pane">
+                <h2>Settings</h2>
+                <div class="settings-section">
+                    <h3>Player Profile</h3>
+                    <div class="settings-option">
+                        <label for="player-name-input">Your Name:</label>
+                        <div class="settings-input-group">
+                            <input type="text" id="player-name-input" placeholder="Enter your name">
+                            <button id="save-name-btn" class="btn primary">Save Name</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Theme Selection</h3>
+                    <div class="settings-option">
+                        <label>Choose Theme:</label>
+                        <div class="theme-selector flex gap-4">
+                            <button class="theme-btn active" data-theme="dark">Dark Theme</button>
+                            <button class="theme-btn" data-theme="light">Light Theme</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Game Data</h3>
+                    <div class="settings-option">
+                        <label>Reset Game Progress:</label>
+                        <p class="text-sm text-gray-500 mb-2">Warning: This will permanently delete all your game data.</p>
+                        <button id="reset-data-btn" class="btn danger">Reset All Data</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-container"></div>
+
+    <div id="message-modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-title" class="text-2xl font-bold mb-4 text-blue-300"></h3>
+            <p id="modal-message" class="text-lg mb-6"></p>
+            <div class="flex justify-end">
+                <button id="modal-close-btn" class="modal-close-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tutorial-modal-overlay" class="modal-overlay">
+        <div class="tutorial-modal-content">
+            <h3>Welcome to Crypto Mining Simulator!</h3>
+            <p>Ready to become a crypto tycoon? Here's a quick guide to get started:</p>
+            <ul>
+                <li><strong>Mining Tab:</strong> This is where the magic happens!
+                    <ul>
+                        <li><strong>Select Cryptocurrency:</strong> Choose which crypto you want to mine. Different cryptos have different profitability and hash rate requirements.</li>
+                        <li><strong>Start Mining:</strong> Click this button to begin mining your selected cryptocurrency.</li>
+                        <li><strong>Stop Mining:</strong> Stop your current mining operation at any time.</li>
+                        <li><strong>Hash Rate:</strong> Shows the processing power of your mining rig. Higher is better!</li>
+                        <li><strong>Power Consumption & Electricity Bill:</strong> Mining consumes power and costs money. Keep an eye on your expenses!</li>
+                        <li><strong>Mining Progress:</strong> Track how close you are to minting a new block.</li>
+                    </ul>
+                </li>
+                <li><strong>Hardware Tab:</strong> Upgrade your rig!
+                    <ul>
+                        <li><strong>Your Hardware:</strong> See all the GPUs, ASICs, cooling, and power supplies you own.</li>
+                        <li><strong>Hardware Shop:</strong> Buy new and more powerful hardware to increase your mining efficiency.</li>
+                    </ul>
+                </li>
+                <li><strong>Market Tab:</strong> Trade your mined crypto.
+                    <ul>
+                        <li><strong>Your Assets:</strong> View your cryptocurrency holdings.</li>
+                        <li><strong>Trade Cryptocurrencies:</strong> Buy or sell different cryptos based on their current market prices.</li>
+                    </ul>
+                </li>
+                <li><strong>Stats Tab:</strong> Track your progress and achievements.</li>
+                <li><strong>Leaderboard Tab:</strong> See how you stack up against other miners globally.</li>
+                <li><strong>Settings Tab:</strong> Customize your game experience, including your player name and theme.</li>
+            </ul>
+            <p>Good luck, miner! Your journey to crypto riches begins now!</p>
+            <div class="flex justify-end">
+                <button id="tutorial-close-btn" class="modal-close-btn">Got It!</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const API_BASE_URL = 'http://localhost:5003';
+        let userId = null;
+        let playerName = "New Miner";
+        let allPlayerNames = new Set();
+        let updateIntervalId = null;
+
+        function generateRandomString(length) {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            const charactersLength = characters.length;
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        }
+
+        function generateUniqueUserId() {
+            let newId;
+            do {
+                newId = `User-a${generateRandomString(8)}`;
+            } while (allPlayerNames.has(newId));
+            return newId;
+        }
+
+        function getUserId() {
+            if (userId) {
+                return userId;
+            }
+            let storedUserId = localStorage.getItem('cryptoMiningSimulatorUserId');
+            if (!storedUserId || !storedUserId.startsWith('User-a')) {
+                storedUserId = generateUniqueUserId();
+                localStorage.setItem('cryptoMiningSimulatorUserId', storedUserId);
+            }
+            userId = storedUserId;
+            return userId;
+        }
+
+        function setPlayerName(name) {
+            playerName = name;
+            document.getElementById('player-name-input').value = playerName;
+        }
+
+        function applyTheme(themeName) {
+            document.body.className = '';
+            document.body.classList.add(`theme-${themeName}`);
+            localStorage.setItem('selectedTheme', themeName);
+
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                if (btn.dataset.theme === themeName) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        let timeElapsedHours = 0;
+        let electricityRate = 0.15;
+        let selectedHardwareForPurchase = null;
+
+        const CRYPTO_ICONS = {};
+
+        let allHardware = [];
+        let hardwareMap = {};
+        let ownedHardware = {};
+        let availableCryptoTypes = [];
+        let achievements = [];
+
+        async function fetchCryptoTypes() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/cryptocurrencies`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const cryptoData = await response.json();
+                availableCryptoTypes = cryptoData.map(c => c.symbol);
+
+                cryptoData.forEach(c => {
+                    CRYPTO_ICONS[c.symbol] = c.iconUrl || `https://placehold.co/40x40/FF9900/FFFFFF?text=${c.symbol}`;
+                });
+
+                populateCryptoSelection();
+                populateTradeCryptoSelect();
+            } catch (error) {
+                console.error("Error fetching crypto types:", error);
+                showModal("Error", "Could not fetch cryptocurrency data from the backend.");
+            }
+        }
+
+        async function getHardwareDefinitions() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/hardware`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const hardwareData = await response.json();
+                allHardware = hardwareData;
+                hardwareMap = {};
+                allHardware.forEach(hw => {
+                    hardwareMap[hw.id] = hw;
+                });
+                displayShopHardware('all');
+            } catch (error) {
+                console.error("Error fetching hardware definitions:", error);
+                showModal("Error", "Could not fetch hardware definitions from the backend.");
+            }
+        }
+
+        async function fetchAchievements() {
+            const currentUserId = getUserId();
+            try {
+                const response = await fetch(`${API_BASE_URL}/achievements?userId=${currentUserId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const achievementData = await response.json();
+                achievements = achievementData;
+                displayAchievements(achievements);
+            } catch (error) {
+                console.error("Error fetching achievements:", error);
+                showModal("Error", "Could not fetch achievements from the backend.");
+            }
+        }
+
+        function displayAchievements(achievementsData) {
+            const achievementsList = document.getElementById('achievements-list');
+            achievementsList.innerHTML = '';
+            if (achievementsData.length === 0) {
+                achievementsList.innerHTML = '<p class="text-center text-gray-400">No achievements yet.</p>';
+                return;
+            }
+            achievementsData.forEach(achievement => {
+                const achievementItem = document.createElement('div');
+                const isLocked = !achievement.unlocked;
+                achievementItem.classList.add('achievement-item');
+                if (isLocked) {
+                    achievementItem.classList.add('locked');
+                }
+                const iconClass = isLocked ? 'fas fa-lock' : 'fas fa-trophy';
+                achievementItem.innerHTML = `<i class="${iconClass}"></i> ${achievement.name}`;
+                achievementsList.appendChild(achievementItem);
+            });
+        }
+
+        function displayShopHardware(filterType = 'all') {
+            const shopGroupedContainer = document.getElementById('shop-grouped-container');
+            shopGroupedContainer.innerHTML = '';
+
+            const hardwareTypes = ['gpu', 'asic', 'cooling', 'power'];
+            const typeDisplayNames = {
+                'gpu': 'GPUs',
+                'asic': 'ASIC Miners',
+                'cooling': 'Cooling Systems',
+                'power': 'Power Supplies'
+            };
+
+            const filteredAndGroupedHardware = {
+                'gpu': [],
+                'asic': [],
+                'cooling': [],
+                'power': []
+            };
+
+            allHardware.forEach(hw => {
+                if (filterType === 'all' || hw.type === filterType) {
+                    if (filteredAndGroupedHardware[hw.type]) {
+                        filteredAndGroupedHardware[hw.type].push(hw);
+                    }
+                }
+            });
+
+            hardwareTypes.forEach(type => {
+                if (filterType === 'all' || filterType === type) {
+                    const groupDiv = document.createElement('div');
+                    groupDiv.classList.add('hardware-group');
+                    groupDiv.innerHTML = `<h4>${typeDisplayNames[type]}</h4><div class="hardware-group-content" id="shop-hardware-group-${type}"></div>`;
+                    shopGroupedContainer.appendChild(groupDiv);
+
+                    const groupContent = document.getElementById(`shop-hardware-group-${type}`);
+                    if (filteredAndGroupedHardware[type].length === 0) {
+                        groupContent.innerHTML = `<p class="text-center text-gray-400">No ${typeDisplayNames[type].toLowerCase()} available.</p>`;
+                    } else {
+                        filteredAndGroupedHardware[type].forEach(hw => {
+                            const card = document.createElement('div');
+                            card.id = `shop-item-${hw.id}`;
+                            card.classList.add('hardware-card', 'available');
+                            card.dataset.hardwareId = hw.id;
+
+                            let hashRateDisplay = '';
+                            if (hw.type === 'gpu') {
+                                hashRateDisplay = `Hash Rate: ${hw.hashRateMHs} MH/s`;
+                            } else if (hw.type === 'asic') {
+                                hashRateDisplay = `Hash Rate: ${hw.hashRateTHs} TH/s`;
+                            } else {
+                                hashRateDisplay = `Capacity: ${hw.coolingCapacityWatts || hw.powerCapacityWatts || 0} W`;
+                            }
+
+                            card.innerHTML = `
+                                <div class="hw-name">${hw.name}</div>
+                                <div class="hw-type">${hw.type.toUpperCase()}</div>
+                                <div class="hw-stats">
+                                    <div>${hashRateDisplay}</div>
+                                    <div>Power: ${hw.powerConsumptionWatts || 0} W</div>
+                                </div>
+                                <div class="hw-cost">$${hw.costUsd.toLocaleString()}</div>
+                            `;
+                            card.addEventListener('click', () => selectHardwareForPurchase(hw.id));
+                            groupContent.appendChild(card);
+                        });
+                    }
+                }
+            });
+        }
+
+        function selectHardwareForPurchase(hardwareId) {
+            if (selectedHardwareForPurchase) {
+                document.getElementById(`shop-item-${selectedHardwareForPurchase.id}`)?.classList.remove('selected-shop-item');
+            }
+            selectedHardwareForPurchase = hardwareMap[hardwareId];
+            if (selectedHardwareForPurchase) {
+                document.getElementById(`shop-item-${selectedHardwareForPurchase.id}`)?.classList.add('selected-shop-item');
+            }
+        }
+
+        function displayOwnedHardware() {
+            const inventoryGroupedContainer = document.getElementById('inventory-grouped-container');
+            inventoryGroupedContainer.innerHTML = '';
+
+            const hardwareTypes = ['gpu', 'asic', 'cooling', 'power'];
+            const typeDisplayNames = {
+                'gpu': 'GPUs',
+                'asic': 'ASIC Miners',
+                'cooling': 'Cooling Systems',
+                'power': 'Power Supplies'
+            };
+
+            let totalOwned = 0;
+            let totalGpuHashRate = 0;
+            let totalAsicHashRate = 0;
+            let totalPowerConsumptionRig = 0;
+
+            const groupedHardware = {
+                'gpu': [],
+                'asic': [],
+                'cooling': [],
+                'power': []
+            };
+
+            for (const id in ownedHardware) {
+                const item = ownedHardware[id];
+                if (item.count > 0) {
+                    totalOwned += item.count;
+                    const hw = item.details;
+                    if (groupedHardware[hw.type]) {
+                        groupedHardware[hw.type].push(item);
+                    }
+
+                    if (hw.type === 'gpu') {
+                        totalGpuHashRate += (hw.hashRateMHs || 0) * item.count;
+                    } else if (hw.type === 'asic') {
+                        totalAsicHashRate += (hw.hashRateTHs || 0) * item.count;
+                    }
+                    totalPowerConsumptionRig += (hw.powerConsumptionWatts || 0) * item.count;
+                }
+            }
+
+            hardwareTypes.forEach(type => {
+                const groupDiv = document.createElement('div');
+                groupDiv.classList.add('hardware-group');
+                groupDiv.innerHTML = `<h4>${typeDisplayNames[type]}</h4><div class="hardware-group-content" id="hardware-group-${type}"></div>`;
+                inventoryGroupedContainer.appendChild(groupDiv);
+
+                const groupContent = document.getElementById(`hardware-group-${type}`);
+                if (groupedHardware[type].length === 0) {
+                    groupContent.innerHTML = `<p class="text-center text-gray-400">No ${typeDisplayNames[type].toLowerCase()} owned.</p>`;
+                } else {
+                    groupedHardware[type].forEach(item => {
+                        const hw = item.details;
+                        const card = document.createElement('div');
+                        card.classList.add('hardware-card');
+
+                        let hashRateDisplay = '';
+                        if (hw.type === 'gpu') {
+                            hashRateDisplay = `Hash Rate: ${(hw.hashRateMHs || 0).toFixed(2)} MH/s`;
+                        } else if (hw.type === 'asic') {
+                            hashRateDisplay = `Hash Rate: ${(hw.hashRateTHs || 0).toFixed(2)} TH/s`;
+                        } else {
+                            hashRateDisplay = `Capacity: ${(hw.coolingCapacityWatts || hw.powerCapacityWatts || 0).toFixed(2)} W`;
+                        }
+
+                        card.innerHTML = `
+                            <div class="hw-name">${hw.name}</div>
+                            <div class="hw-type">${hw.type.toUpperCase()}</div>
+                            <div class="hw-quantity">${item.count}x</div>
+                            <div class="hw-stats">
+                                <div>${hashRateDisplay}</div>
+                                <div>Power: ${(hw.powerConsumptionWatts || 0).toFixed(2)} W</div>
+                            </div>
+                        `;
+                        groupContent.appendChild(card);
+                    });
+                }
+            });
+
+            document.getElementById('total-owned-hardware').textContent = totalOwned;
+            document.getElementById('total-gpu-hash-rate').textContent = `${(totalGpuHashRate).toFixed(2)} MH/s`;
+            document.getElementById('total-asic-hash-rate').textContent = `${(totalAsicHashRate).toFixed(2)} TH/s`;
+            document.getElementById('total-power-usage-rig').textContent = `${totalPowerConsumptionRig.toFixed(2)} W`;
+        }
+
+        async function updateUI() {
+            try {
+                const currentUserId = getUserId();
+                const response = await fetch(`${API_BASE_URL}/state?userId=${currentUserId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const state = await response.json();
+
+                playerName = state.player?.name || "New Miner";
+                document.getElementById('player-name-input').value = playerName;
+                allPlayerNames = new Set(state.allPlayerNames || []);
+
+                document.getElementById('wallet-usd').textContent = `$${(state.wallet?.usd || 0).toFixed(2)}`;
+                document.getElementById('wallet-btc').textContent = `${(state.wallet?.BTC || 0).toFixed(8)} BTC`;
+                document.getElementById('wallet-eth').textContent = `${(state.wallet?.ETH || 0).toFixed(8)} ETH`;
+                document.getElementById('wallet-doge').textContent = `${(state.wallet?.DOGE || 0).toFixed(8)} DOGE`;
+                document.getElementById('wallet-ltc').textContent = `${(state.wallet?.LTC || 0).toFixed(8)} LTC`;
+                document.getElementById('wallet-xmr').textContent = `${(state.wallet?.XMR || 0).toFixed(8)} XMR`;
+
+                let displayHashRate = 0;
+                let displayHashUnit = 'H/s';
+                if (state.currentlyMiningCrypto === 'BTC') {
+                    displayHashRate = state.miningRig?.totalAsicHashRateTH || 0;
+                    displayHashUnit = 'TH/s';
+                } else {
+                    displayHashRate = (state.miningRig?.totalHashRate || 0);
+                    displayHashUnit = 'MH/s';
+                }
+                document.getElementById('current-hash-rate').textContent = `${displayHashRate.toFixed(2)} ${displayHashUnit}`;
+
+                document.getElementById('power-consumed').textContent = `${(state.miningRig?.totalPowerConsumption || 0).toFixed(2)}`;
+                document.getElementById('power-capacity').textContent = 'XXX';
+                document.getElementById('total-gpu-hash-rate').textContent = `${(state.miningRig?.totalHashRate || 0).toFixed(2)} MH/s`;
+                document.getElementById('total-asic-hash-rate').textContent = `${(state.miningRig?.totalAsicHashRateTH || 0).toFixed(2)} TH/s`;
+                document.getElementById('total-power-usage-rig').textContent = `${(state.miningRig?.totalPowerConsumption || 0).toFixed(2)} W`;
+
+                timeElapsedHours = state.time?.hours || 0;
+                const days = Math.floor(timeElapsedHours / 24);
+                const hours = timeElapsedHours % 24;
+                const nextBillTimeHours = state.electricityBillDueInHours || 0;
+                const nextBillDays = Math.floor(nextBillTimeHours / 24);
+                const nextBillHours = nextBillTimeHours % 24;
+
+                document.getElementById('time-elapsed').textContent = `${days} days, ${hours} hours`;
+                document.getElementById('bill-rate').textContent = `$${(state.electricityRate || 0).toFixed(2)}/kWh`;
+                document.getElementById('current-bill-amount').textContent = `$${(state.lastElectricityBillAmount || 0).toFixed(2)}`;
+                document.getElementById('next-billing-time').textContent = `${nextBillDays}d ${nextBillHours}h`;
+                document.getElementById('daily-electricity-cost').textContent = `$${((state.miningRig?.totalPowerConsumption || 0) * 24 / 1000 * (state.electricityRate || 0)).toFixed(2)}`;
+
+
+                document.getElementById('player-level').textContent = state.player?.level || 1;
+                document.getElementById('current-xp').textContent = state.player?.xp || 0;
+                document.getElementById('next-level-xp').textContent = state.player?.xpToNextLevel || 100;
+                const xpProgress = ((state.player?.xp || 0) / (state.player?.xpToNextLevel || 1)) * 100;
+                document.getElementById('level-progress-bar').style.width = `${xpProgress}%`;
+
+                document.getElementById('current-crypto-mining').textContent = state.currentlyMiningCrypto || 'None';
+                document.querySelectorAll('.crypto-card').forEach(c => c.classList.remove('selected'));
+                if (state.currentlyMiningCrypto && state.currentlyMiningCrypto !== 'None') {
+                    const selectedCryptoCard = document.querySelector(`.crypto-card[data-crypto-symbol="${state.currentlyMiningCrypto}"]`);
+                    if (selectedCryptoCard) {
+                        selectedCryptoCard.classList.add('selected');
+                    }
+                }
+
+                const isSimulatorActive = state.simulatorRunning || (state.currentlyMiningCrypto && state.currentlyMiningCrypto !== 'None');
+
+                if (isSimulatorActive) {
+                    document.getElementById('start-mining-btn').disabled = true;
+                    document.getElementById('stop-mining-btn').disabled = false;
+                    if (!updateIntervalId) {
+                        updateIntervalId = setInterval(updateUI, 1000);
+                        addLogEntry("Frontend update loop started.");
+                    }
+                } else {
+                    document.getElementById('start-mining-btn').disabled = false;
+                    document.getElementById('stop-mining-btn').disabled = true;
+                    if (updateIntervalId) {
+                        clearInterval(updateIntervalId);
+                        updateIntervalId = null;
+                        addLogEntry("Frontend update loop stopped.");
+                    }
+                }
+
+                if (state.miningProgressPercent !== undefined) {
+                    document.getElementById('progress-percentage').textContent = `${(state.miningProgressPercent || 0).toFixed(1)}%`;
+                    document.getElementById('mining-progress-bar').style.width = `${(state.miningProgressPercent || 0)}%`;
+                }
+
+                ownedHardware = state.ownedHardware || {};
+                displayOwnedHardware();
+
+                updateLog(state.logs || []);
+                updateAssetsDisplay(state.wallet || {}, state.cryptoPrices || {});
+                window.lastKnownCryptoPrices = state.cryptoPrices;
+
+                document.getElementById('total-mined').textContent = `${(state.totalMinedCoins || 0).toFixed(4)} coins`;
+                document.getElementById('mining-time').textContent = `${(state.totalMiningTimeHours || 0).toFixed(1)} hours`;
+                document.getElementById('energy-used').textContent = `${(state.totalEnergyUsedKWh || 0).toFixed(2)} kWh`;
+                document.getElementById('total-earnings').textContent = `$${(state.totalEarningsUsd || 0).toFixed(2)}`;
+                document.getElementById('hardware-investment').textContent = `$${(state.totalHardwareInvestmentUsd || 0).toFixed(2)}`;
+                const netProfit = (state.wallet?.usd || 0) - (state.totalHardwareInvestmentUsd || 0) + (state.totalEarningsUsd || 0) - (state.totalElectricityCostUsd || 0);
+                document.getElementById('net-profit').textContent = `$${netProfit.toFixed(2)}`;
+
+                document.getElementById('play-time').textContent = `${(state.playTimeMinutes || 0).toFixed(0)} minutes`;
+                document.getElementById('save-date').textContent = state.lastSaveDate ? new Date(state.lastSaveDate).toLocaleString() : 'Never';
+
+                fetchAchievements();
+
+            } catch (error) {
+                console.error("Error fetching state:", error);
+                showModal("Error", "Could not connect to backend or retrieve simulator state. Please ensure the backend is running. Check console for details.");
+                if (updateIntervalId) {
+                    clearInterval(updateIntervalId);
+                    updateIntervalId = null;
+                }
+                document.getElementById('start-mining-btn').disabled = false;
+                document.getElementById('stop-mining-btn').disabled = true;
+            }
+        }
+
+        async function fetchLeaderboard() {
+            const leaderboardContainer = document.getElementById('leaderboard-container');
+            leaderboardContainer.innerHTML = '<p class="text-center text-gray-400">Loading leaderboard...</p>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/leaderboard`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const leaderboardData = await response.json();
+                displayLeaderboard(leaderboardData);
+            } catch (error) {
+                console.error("Error fetching leaderboard:", error);
+                leaderboardContainer.innerHTML = '<p class="text-center text-red-400">Failed to load leaderboard. Backend unavailable.</p>';
+            }
+        }
+
+        function displayLeaderboard(data) {
+            const leaderboardContainer = document.getElementById('leaderboard-container');
+            leaderboardContainer.innerHTML = '';
+            if (data.length === 0) {
+                leaderboardContainer.innerHTML = '<p class="text-center text-gray-400">No leaderboard data available.</p>';
+                return;
+            }
+            data.forEach((entry, index) => {
+                const entryDiv = document.createElement('div');
+                entryDiv.textContent = `${index + 1}. ${entry.name || 'Anonymous'}: $${(entry.usdBalance || 0).toFixed(2)}`;
+                leaderboardContainer.appendChild(entryDiv);
+            });
+        }
+
+
+        function addLogEntry(message) {
+            const logBox = document.getElementById('activity-log');
+            const p = document.createElement('div');
+            p.classList.add('log-entry');
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logBox.appendChild(p);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        let lastKnownLogs = [];
+        function updateLog(newLogs) {
+            const logBox = document.getElementById('activity-log');
+            const newEntries = newLogs.slice(lastKnownLogs.length);
+            newEntries.forEach(log => {
+                const p = document.createElement('div');
+                p.classList.add('log-entry');
+                p.textContent = `[${new Date(log.timestamp).toLocaleTimeString()}] ${log.message}`;
+                logBox.appendChild(p);
+            });
+            logBox.scrollTop = logBox.scrollHeight;
+            lastKnownLogs = newLogs;
+        }
+
+        async function startSimulation() {
+            const selectedCrypto = document.querySelector('.crypto-card.selected');
+            if (!selectedCrypto) {
+                showModal("Mining Error", "Please select a cryptocurrency to mine.");
+                return;
+            }
+            const cryptoSymbol = selectedCrypto.dataset.cryptoSymbol;
+            const currentUserId = getUserId();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/start_simulation`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, cryptoSymbol: cryptoSymbol })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                await updateUI();
+                if (result.status === 'success') {
+                    addLogEntry(result.message);
+                    showNotification(`Mining ${cryptoSymbol} started!`);
+                } else {
+                    showModal("Error", result.message || "Failed to start simulation.");
+                }
+            } catch (error) {
+                console.error("Error starting simulation:", error);
+                showModal("Error", "Failed to communicate with backend to start simulation.");
+                await updateUI();
+            }
+        }
+
+        async function stopSimulation() {
+            const currentUserId = getUserId();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/stop_simulation`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                await updateUI();
+                if (result.status === 'success') {
+                    addLogEntry(result.message);
+                    showNotification("Mining stopped.");
+                } else {
+                    showModal("Error", result.message || "Failed to stop simulation.");
+                }
+            } catch (error) {
+                console.error("Error stopping simulation:", error);
+                showModal("Error", "Failed to communicate with backend to stop simulation.");
+                await updateUI();
+            }
+        }
+
+        let purchaseQuantity = 1;
+
+        function setPurchaseQuantity(quantity) {
+            purchaseQuantity = quantity;
+        }
+
+        async function buyHardware() {
+            if (!selectedHardwareForPurchase) {
+                showModal("Selection Error", "Please select a hardware item from the shop first.");
+                return;
+            }
+
+            const quantity = purchaseQuantity;
+            const currentUserId = getUserId();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/buy_hardware`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        hardwareId: selectedHardwareForPurchase.id,
+                        quantity: quantity,
+                    })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                if (result.status === 'success') {
+                    addLogEntry(result.message);
+                    if (result.ownedHardware) {
+                        ownedHardware = result.ownedHardware;
+                        displayOwnedHardware();
+                    }
+                    showNotification(`Purchased ${quantity}x ${selectedHardwareForPurchase.name}!`);
+                    updateUI();
+                } else {
+                    showModal("Purchase Failed", result.message || "Could not buy hardware.");
+                }
+            } catch (error) {
+                console.error("Error buying hardware:", error);
+                showModal("Error", "Failed to communicate with backend for hardware purchase.");
+            }
+        }
+
+        async function sellCrypto() {
+            const cryptoType = document.getElementById('trade-crypto-select').value;
+            const amount = parseFloat(document.getElementById('trade-amount').value);
+
+            if (isNaN(amount) || amount <= 0) {
+                showModal("Input Error", "Please enter a valid amount to sell.");
+                return;
+            }
+            const currentUserId = getUserId();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/sell_crypto`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, cryptoType: cryptoType, amount: amount })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                if (result.status === 'success') {
+                    addLogEntry(result.message);
+                    showNotification(`Sold ${amount.toFixed(4)} ${cryptoType}!`);
+                    updateUI();
+                } else {
+                    showModal("Sale Failed", result.message || "Could not sell crypto.");
+                }
+            } catch (error) {
+                console.error("Error selling crypto:", error);
+                showModal("Error", "Failed to communicate with backend for crypto sale.");
+            }
+        }
+
+        async function buyCrypto() {
+            const cryptoType = document.getElementById('trade-crypto-select').value;
+            const amount = parseFloat(document.getElementById('trade-amount').value);
+
+            if (isNaN(amount) || amount <= 0) {
+                showModal("Input Error", "Please enter a valid amount to buy.");
+                return;
+            }
+            const currentUserId = getUserId();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/buy_crypto`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, cryptoType: cryptoType, amount: amount })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                if (result.status === 'success') {
+                    addLogEntry(result.message);
+                    showNotification(`Bought ${amount.toFixed(4)} ${cryptoType}!`);
+                    updateUI();
+                } else {
+                    showModal("Purchase Failed", result.message || "Could not buy crypto.");
+                }
+            } catch (error) {
+                console.error("Error buying crypto:", error);
+                showModal("Error", "Failed to communicate with backend for crypto purchase.");
+            }
+        }
+
+        async function redeemCode(code) {
+            if (!code) {
+                showModal("Input Error", "Please enter a redemption code.");
+                return;
+            }
+            const currentUserId = getUserId();
+            try {
+                const response = await fetch(`${API_BASE_URL}/redeem_code`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, code: code })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                if (result.status === 'success') {
+                    addLogEntry(result.message);
+                    showNotification(result.message);
+                    updateUI();
+                } else {
+                    showModal("Redemption Failed", result.message || "Could not redeem code.");
+                }
+            } catch (error) {
+                console.error("Error redeeming code:", error);
+                showModal("Error", "Failed to communicate with backend for code redemption.");
+            } finally {
+                document.getElementById('redeem-code-input').value = '';
+            }
+        }
+
+        async function updatePlayerName() {
+            const newName = document.getElementById('player-name-input').value.trim();
+            if (!newName) {
+                showModal("Input Error", "Player name cannot be empty.");
+                return;
+            }
+            const currentUserId = getUserId();
+            try {
+                const response = await fetch(`${API_BASE_URL}/update_name`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, name: newName })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                if (result.status === 'success') {
+                    playerName = newName;
+                    addLogEntry(`Player name updated to: ${playerName}`);
+                    showNotification(`Name saved: ${playerName}`);
+                    updateUI();
+                } else {
+                    showModal("Name Update Failed", result.message || "Could not update player name.");
+                }
+            } catch (error) {
+                console.error("Error updating player name:", error);
+                showModal("Error", "Failed to communicate with backend to update name.");
+            }
+        }
+
+        async function resetGameData() {
+            const confirmReset = window.confirm("Are you sure you want to reset all your game data? This action cannot be undone!");
+            if (!confirmReset) {
+                return;
+            }
+            const currentUserId = getUserId();
+            try {
+                const response = await fetch(`${API_BASE_URL}/reset_data`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                if (result.status === 'success') {
+                    addLogEntry("Game data has been reset.");
+                    showNotification("Game data reset successfully!");
+                    localStorage.removeItem('cryptoMiningSimulatorUserId');
+                    userId = null;
+                    getUserId();
+
+                    updateUI();
+                    displayOwnedHardware();
+                    displayShopHardware('all');
+                    document.getElementById('activity-log').innerHTML = '<div class="log-entry">Welcome to Crypto Mining Simulator!</div>';
+                } else {
+                    showModal("Reset Failed", result.message || "Could not reset game data.");
+                }
+            } catch (error) {
+                console.error("Error resetting game data:", error);
+                showModal("Error", "Failed to communicate with backend to reset data.");
+            }
+        }
+
+
+        const modalOverlay = document.getElementById('message-modal-overlay');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+
+        function showModal(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalOverlay.classList.add('active');
+        }
+
+        function hideModal() {
+            modalOverlay.classList.remove('active');
+        }
+
+        const tutorialModalOverlay = document.getElementById('tutorial-modal-overlay');
+        const tutorialCloseBtn = document.getElementById('tutorial-close-btn');
+
+        function showTutorialModal() {
+            tutorialModalOverlay.classList.add('active');
+        }
+
+        function hideTutorialModal() {
+            tutorialModalOverlay.classList.remove('active');
+            localStorage.setItem('hasSeenTutorial', 'true');
+        }
+
+
+        function showNotification(message, duration = 3000) {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.classList.add('notification');
+            notification.textContent = message;
+            container.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, duration);
+        }
+
+        document.getElementById('start-mining-btn').addEventListener('click', startSimulation);
+        document.getElementById('stop-mining-btn').addEventListener('click', stopSimulation);
+
+        document.getElementById('buy-1x-btn').addEventListener('click', () => { setPurchaseQuantity(1); buyHardware(); });
+        document.getElementById('buy-100x-btn').addEventListener('click', () => { setPurchaseQuantity(100); buyHardware(); });
+        document.getElementById('buy-1000x-btn').addEventListener('click', () => { setPurchaseQuantity(1000); buyHardware(); });
+
+        document.getElementById('buy-crypto-btn').addEventListener('click', buyCrypto);
+        document.getElementById('sell-crypto-btn').addEventListener('click', sellCrypto);
+        document.getElementById('redeem-code-btn').addEventListener('click', () => {
+            const code = document.getElementById('redeem-code-input').value;
+            redeemCode(code);
+        });
+
+        document.getElementById('save-name-btn').addEventListener('click', updatePlayerName);
+        document.getElementById('reset-data-btn').addEventListener('click', resetGameData);
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
+        });
+
+
+        modalCloseBtn.addEventListener('click', hideModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) hideModal();
+        });
+
+        tutorialCloseBtn.addEventListener('click', hideTutorialModal);
+        tutorialModalOverlay.addEventListener('click', (e) => {
+            if (e.target === tutorialModalOverlay) hideTutorialModal();
+        });
+
+        let priceChartInstances = [];
+        let currentChartIndex = 0;
+
+        function showChart(index) {
+            if (priceChartInstances.length === 0) {
+                document.getElementById('chart-slideshow-container').innerHTML = '<p class="text-center text-gray-400">No chart data available.</p>';
+                document.getElementById('prev-chart-btn').disabled = true;
+                document.getElementById('next-chart-btn').disabled = true;
+                return;
+            }
+
+            priceChartInstances.forEach((chart, i) => {
+                chart.canvas.style.display = (i === index) ? 'block' : 'none';
+            });
+
+            document.getElementById('prev-chart-btn').disabled = (index === 0);
+            document.getElementById('next-chart-btn').disabled = (index === priceChartInstances.length - 1);
+        }
+
+        function showNextChart() {
+            if (currentChartIndex < priceChartInstances.length - 1) {
+                currentChartIndex++;
+                showChart(currentChartIndex);
+            }
+        }
+
+        function showPreviousChart() {
+            if (currentChartIndex > 0) {
+                currentChartIndex--;
+                showChart(currentChartIndex);
+            }
+        }
+
+        document.getElementById('prev-chart-btn').addEventListener('click', showPreviousChart);
+        document.getElementById('next-chart-btn').addEventListener('click', showNextChart);
+
+
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', async function() {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+
+                this.classList.add('active');
+                const targetTabId = this.dataset.tab;
+                document.getElementById(targetTabId).classList.add('active');
+
+                if (targetTabId === 'hardware') {
+                    displayShopHardware('all');
+                    displayOwnedHardware();
+                    await updateUI().then(() => setupPriceCharts(window.lastKnownCryptoPrices || {}));
+                } else if (targetTabId === 'leaderboard') {
+                    await fetchLeaderboard();
+                } else if (targetTabId === 'stats') {
+                    await fetchAchievements();
+                } else if (targetTabId === 'settings') {
+                    document.getElementById('player-name-input').value = playerName;
+                }
+                await updateUI();
+            });
+        });
+
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                displayShopHardware(this.dataset.category);
+            });
+        });
+
+        function populateCryptoSelection() {
+            const cryptoList = document.getElementById('crypto-list');
+            cryptoList.innerHTML = '';
+            availableCryptoTypes.forEach(symbol => {
+                const card = document.createElement('div');
+                card.classList.add('crypto-card');
+                card.dataset.cryptoSymbol = symbol;
+                card.innerHTML = `
+                    <img src="${CRYPTO_ICONS[symbol]}" alt="${symbol} icon">
+                    <span>${symbol}</span>
+                `;
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.crypto-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    document.getElementById('current-crypto-mining').textContent = symbol;
+                });
+                cryptoList.appendChild(card);
+            });
+        }
+
+        function populateTradeCryptoSelect() {
+            const tradeCryptoSelect = document.getElementById('trade-crypto-select');
+            tradeCryptoSelect.innerHTML = '';
+            availableCryptoTypes.forEach(symbol => {
+                const option = document.createElement('option');
+                option.value = symbol;
+                option.textContent = symbol;
+                tradeCryptoSelect.appendChild(option);
+            });
+        }
+
+
+        function setupPriceCharts(cryptoPrices) {
+            priceChartInstances.forEach(chart => chart.destroy());
+            priceChartInstances = [];
+
+            const chartContainer = document.getElementById('chart-slideshow-container');
+            chartContainer.innerHTML = '';
+
+            const labels = Array.from({length: 24}, (_, i) => `${i}h`);
+
+            if (Object.keys(cryptoPrices).length === 0) {
+                 chartContainer.innerHTML = '<p class="text-center text-gray-400">No chart data available.</p>';
+                 return;
+            }
+
+            for (const symbol in cryptoPrices) {
+                const canvas = document.createElement('canvas');
+                canvas.id = `price-chart-${symbol}`;
+                canvas.classList.add('w-full', 'h-full');
+                chartContainer.appendChild(canvas);
+
+                const ctx = canvas.getContext('2d');
+                const basePrice = typeof cryptoPrices[symbol] === 'number' ? cryptoPrices[symbol] : 1;
+                const data = Array.from({length: 24}, () => basePrice * (1 + (Math.random() * 0.1 - 0.05)));
+
+                const newChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: `${symbol} Price (USD)`,
+                            data: data,
+                            borderColor: getRandomColor(),
+                            tension: 0.1,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(255,255,255,0.1)' },
+                                ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-secondary') }
+                            },
+                            y: {
+                                grid: { color: 'rgba(255,255,255,0.1)' },
+                                ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-secondary') },
+                                beginAtZero: false
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--text-primary')
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: `${symbol} Price Trend`,
+                                color: getComputedStyle(document.body).getPropertyValue('--text-primary'),
+                                font: { size: 18, weight: 'bold' }
+                            }
+                        }
+                    }
+                });
+                priceChartInstances.push(newChartInstance);
+            }
+
+            currentChartIndex = 0;
+            showChart(currentChartIndex);
+        }
+
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function updateAssetsDisplay(wallet, cryptoPrices) {
+            const assetsContainer = document.getElementById('assets-container');
+            assetsContainer.innerHTML = '';
+            let hasAssets = false;
+            for (const symbol in wallet) {
+                if (symbol !== 'usd' && (wallet[symbol] || 0) > 0.00000001) {
+                    hasAssets = true;
+                    const card = document.createElement('div');
+                    card.classList.add('asset-card');
+                    card.innerHTML = `
+                        <div class="asset-symbol">${symbol}</div>
+                        <div class="asset-amount">${(wallet[symbol] || 0).toFixed(8)}</div>
+                        <div class="asset-price">$${(cryptoPrices[symbol] || 0)?.toFixed(2) || 'N/A'} USD/coin</div>
+                    `;
+                    assetsContainer.appendChild(card);
+                }
+            }
+            if (!hasAssets) {
+                assetsContainer.innerHTML = `<p class="text-center text-gray-400">You don't own any cryptocurrency yet.</p>`;
+            }
+        }
+
+        async function requestCurrentMiningState() {
+            const currentUserId = getUserId();
+            try {
+                const response = await fetch(`${API_BASE_URL}/requestcurrentminingstate?userId=${currentUserId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                if (result.status === 'success') {
+                    let logHashRate = result.hashRate || 0;
+                    let logHashUnit = 'MH/s';
+                    if (result.currentlyMiningCrypto === 'BTC') {
+                        logHashRate = (result.hashRate / 1000000);
+                        if (logHashRate >= 1000) {
+                            logHashRate /= 1000;
+                            logHashUnit = 'TH/s';
+                        } else {
+                            logHashUnit = 'MH/s';
+                        }
+                    } else {
+                        if (logHashRate >= 1000000) {
+                            logHashRate /= 1000000;
+                            logHashUnit = 'MH/s';
+                        } else {
+                            logHashUnit = 'MH/s';
+                        }
+                    }
+
+                    addLogEntry(`Current Mining State: Crypto: ${result.currentlyMiningCrypto || 'None'}, Progress: ${(result.miningProgressPercent || 0).toFixed(1)}%, Hash Rate: ${logHashRate.toFixed(2)} ${logHashUnit}, Power: ${(result.powerConsumption || 0).toFixed(2)}W`);
+                } else {
+                    addLogEntry(`Failed to get current mining state: ${result.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error("Error fetching current mining state:", error);
+                addLogEntry("Error: Could not fetch current mining state from backend.");
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            getUserId();
+            const savedTheme = localStorage.getItem('selectedTheme') || 'dark';
+            applyTheme(savedTheme);
+
+            await getHardwareDefinitions();
+            await fetchCryptoTypes();
+
+            await updateUI();
+            await requestCurrentMiningState();
+
+            const hasSeenTutorial = localStorage.getItem('hasSeenTutorial');
+            if (!hasSeenTutorial) {
+                showTutorialModal();
+            }
+
+            document.querySelector('.tab-btn[data-tab="mining"]').click();
+            addLogEntry("Simulator loaded. Select a cryptocurrency and click 'Start Mining'!");
+        });
+
+    </script>
+</body>
+</html>
