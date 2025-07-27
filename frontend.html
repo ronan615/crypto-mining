@@ -5,43 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crypto Mining Simulator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
-            --bg-primary: #1a202c;
-            --bg-secondary: #2d3748;
-            --text-primary: #e2e8f0;
-            --text-secondary: #cbd5e0;
-            --accent-blue: #63b3ed;
-            --accent-green: #48bb78;
-            --accent-orange: #f6ad55;
-            --accent-purple: #9f7aea;
-            --accent-red: #e53e3e;
-            --border-color: #4a5568;
-            --card-bg: #2d3748;
-            --input-bg: #4a5568;
-            --input-border: #718096;
-            --log-bg: #1a202c;
-            --modal-bg: #2d3748;
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent-blue: #007bff;
+            --accent-green: #28a745;
+            --accent-orange: #ffc107;
+            --accent-purple: #6f42c1;
+            --accent-red: #dc3545;
+            --border-color: #333333;
+            --card-bg: #2a2a2a;
+            --input-bg: #3a3a3a;
+            --input-border: #555555;
+            --log-bg: #1a1a1a;
+            --modal-bg: #2a2a2a;
+            --shadow-light: rgba(0, 0, 0, 0.2);
+            --shadow-dark: rgba(0, 0, 0, 0.5);
         }
 
         .theme-light {
-            --bg-primary: #f0f4f8;
+            --bg-primary: #f0f2f5;
             --bg-secondary: #ffffff;
-            --text-primary: #2d3748;
-            --text-secondary: #4a5568;
-            --accent-blue: #3182ce;
-            --accent-green: #38a169;
-            --accent-orange: #dd6b20;
-            --accent-purple: #805ad5;
-            --accent-red: #c53030;
-            --border-color: #e2e8f0;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --accent-blue: #007bff;
+            --accent-green: #28a745;
+            --accent-orange: #fd7e14;
+            --accent-purple: #6f42c1;
+            --accent-red: #dc3545;
+            --border-color: #e0e0e0;
             --card-bg: #ffffff;
-            --input-bg: #edf2f7;
-            --input-border: #cbd5e0;
-            --log-bg: #f7fafc;
+            --input-bg: #f8f9fa;
+            --input-border: #ced4da;
+            --log-bg: #e9ecef;
             --modal-bg: #ffffff;
+            --shadow-light: rgba(0, 0, 0, 0.08);
+            --shadow-dark: rgba(0, 0, 0, 0.15);
         }
 
         body {
@@ -52,117 +56,162 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding: 2rem;
-            transition: background-color 0.3s ease-in-out;
+            padding: 1.5rem;
+            transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+            overflow-x: hidden;
         }
-        .container {
+        .dashboard-container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1200px;
             background-color: var(--bg-secondary);
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
-            transition: background-color 0.3s ease-in-out;
+            border-radius: 1rem;
+            box-shadow: 0 15px 30px var(--shadow-dark);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 90vh;
+            transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
         }
+
         header {
-            text-align: center;
-            margin-bottom: 2rem;
-            position: relative;
+            background: linear-gradient(90deg, var(--accent-blue) 0%, #0056b3 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
         }
         header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent-blue);
-            margin-bottom: 1rem;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
         }
         .wallet {
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 1.5rem;
+            gap: 1rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            color: var(--accent-green);
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            backdrop-filter: blur(5px);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         .wallet i {
-            color: var(--text-secondary);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .wallet span {
+            color: white;
         }
         .level-container {
-            background-color: var(--input-bg);
+            background-color: rgba(0, 0, 0, 0.2);
             border-radius: 9999px;
-            padding: 0.5rem 1.5rem;
+            padding: 0.4rem 1.2rem;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 1rem;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-            transition: background-color 0.3s ease-in-out;
+            gap: 0.8rem;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+            flex-grow: 1;
+            max-width: 250px;
         }
         .level-number {
             font-weight: 700;
-            color: var(--text-secondary);
-            font-size: 1.125rem;
+            color: #e0e0e0;
+            font-size: 1rem;
         }
         .level-progress-container {
             flex-grow: 1;
-            background-color: var(--input-border);
+            background-color: rgba(255, 255, 255, 0.2);
             border-radius: 9999px;
-            height: 0.75rem;
+            height: 0.6rem;
             position: relative;
             overflow: hidden;
-            transition: background-color 0.3s ease-in-out;
         }
         .level-progress-bar {
             height: 100%;
-            background-color: #667eea;
+            background-color: #7b68ee;
             border-radius: 9999px;
-            transition: width 0.3s ease-in-out;
+            transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
         .level-progress-text {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            color: var(--text-primary);
+            color: white;
             text-shadow: 0 0 2px rgba(0,0,0,0.5);
         }
 
-        .tabs {
+        .main-content {
             display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid var(--border-color);
-            transition: border-bottom-color 0.3s ease-in-out;
+            flex-grow: 1;
+            padding: 1.5rem;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .sidebar {
+            flex: 0 0 200px;
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px var(--shadow-dark);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .content-area {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tabs {
+            flex-direction: column;
+            border-bottom: none;
+            gap: 0.5rem;
         }
         .tab-btn {
-            background-color: transparent;
-            border: none;
-            padding: 1rem 2rem;
-            font-size: 1.125rem;
+            width: 100%;
+            text-align: left;
+            padding: 0.8rem 1.2rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--text-secondary);
-            cursor: pointer;
-            transition: color 0.2s, border-bottom 0.2s, transform 0.2s;
-            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease-out;
+            border-bottom: none;
         }
         .tab-btn:hover {
             color: var(--text-primary);
-            border-bottom-color: var(--input-border);
-            transform: translateY(-2px);
+            background-color: var(--input-bg);
+            transform: translateX(3px);
+            box-shadow: 0 2px 8px var(--shadow-dark);
         }
         .tab-btn.active {
-            color: var(--accent-blue);
-            border-bottom-color: var(--accent-blue);
+            background-color: var(--accent-blue);
+            color: white;
+            transform: translateX(0);
+            box-shadow: 0 2px 8px var(--shadow-dark);
+            font-weight: 700;
+        }
+        .tab-btn::before {
+            display: none;
         }
 
         .tab-pane {
             display: none;
-            padding-top: 1rem;
+            animation: fadeIn 0.6s ease-out forwards;
         }
         .tab-pane.active {
             display: block;
@@ -174,61 +223,75 @@
             color: var(--accent-blue);
             margin-bottom: 1.5rem;
             text-align: center;
+            text-shadow: 0 1px 3px var(--shadow-light);
         }
         h3 {
             font-size: 1.5rem;
             font-weight: 600;
             color: var(--accent-purple);
             margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            text-shadow: 0 1px 2px var(--shadow-light);
         }
 
         .btn {
             padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
             font-weight: 600;
-            transition: all 0.2s;
+            transition: all 0.3s ease-out;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 6px var(--shadow-dark);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            z-index: 1;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            transition: all 0.4s ease-out;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: -1;
+        }
+        .btn:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+        }
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px var(--shadow-dark);
         }
         .btn.primary {
-            background-color: #4299e1;
+            background: linear-gradient(145deg, var(--accent-blue), #0056b3);
             color: white;
         }
         .btn.primary:hover {
-            background-color: #3182ce;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        .btn.primary:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
         }
         .btn.danger {
-            background-color: #f56565;
+            background: linear-gradient(145deg, var(--accent-red), #b30000);
             color: white;
         }
         .btn.danger:hover {
-            background-color: #e53e3e;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        .btn.danger:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
         }
         .btn.secondary {
-            background-color: #a0aec0;
+            background: linear-gradient(145deg, var(--text-secondary), #666666);
             color: white;
         }
         .btn.secondary:hover {
-            background-color: #718096;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        .btn.secondary:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
         }
         input[type="number"], input[type="text"], select {
             background-color: var(--input-bg);
@@ -237,7 +300,21 @@
             padding: 0.5rem 1rem;
             color: var(--text-primary);
             width: 100%;
-            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        input[type="number"]:focus, input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+        }
+
+        .card-section {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px var(--shadow-dark);
+            transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            animation: fadeInUp 0.6s ease-out forwards;
         }
 
         .log-container {
@@ -248,11 +325,13 @@
             overflow-y: auto;
             border: 1px solid var(--border-color);
             transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+            box-shadow: inset 0 1px 3px var(--shadow-dark);
         }
         .log-entry {
             margin-bottom: 0.5rem;
             font-size: 0.875rem;
             color: var(--text-secondary);
+            animation: slideInFromLeft 0.3s ease-out forwards;
         }
         .log-container::-webkit-scrollbar {
             width: 8px;
@@ -282,21 +361,28 @@
             z-index: 1000;
             visibility: hidden;
             opacity: 0;
-            transition: visibility 0s, opacity 0.3s;
+            transition: visibility 0s, opacity 0.3s ease-in-out;
         }
         .modal-overlay.active {
             visibility: visible;
             opacity: 1;
         }
-        .modal-content {
+        .modal-content, .tutorial-modal-content {
             background-color: var(--modal-bg);
             padding: 2rem;
             border-radius: 0.75rem;
             max-width: 500px;
             width: 90%;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 20px var(--shadow-dark);
             color: var(--text-primary);
             transition: background-color 0.3s ease-in-out;
+            transform: translateY(-20px);
+            opacity: 0;
+            animation: modalSlideIn 0.3s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .modal-overlay.active .modal-content, .modal-overlay.active .tutorial-modal-content {
+            transform: translateY(0);
+            opacity: 1;
         }
         .modal-close-btn {
             background-color: var(--accent-red);
@@ -305,20 +391,28 @@
             border-radius: 0.375rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
         }
         .modal-close-btn:hover {
-            background-color: #e53e3e;
+            background-color: #b30000;
+            transform: translateY(-1px);
+        }
+        .modal-confirm-btn {
+            background-color: var(--accent-green);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            margin-left: 1rem;
+        }
+        .modal-confirm-btn:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
         }
         .tutorial-modal-content {
-            background-color: var(--modal-bg);
-            padding: 2rem;
-            border-radius: 0.75rem;
             max-width: 600px;
-            width: 90%;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            color: var(--text-primary);
-            transition: background-color 0.3s ease-in-out;
             text-align: left;
         }
         .tutorial-modal-content h3 {
@@ -350,15 +444,7 @@
             margin-top: 1.5rem;
         }
 
-        .crypto-selection {
-            margin-bottom: 2rem;
-            background-color: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease-in-out;
-        }
-        .crypto-cards {
+        .crypto-selection .crypto-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 1rem;
@@ -369,27 +455,32 @@
             padding: 1rem;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s ease-out, border-color 0.2s ease-out;
             border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 4px var(--shadow-light);
         }
         .crypto-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 16px var(--shadow-dark);
             background-color: var(--input-border);
         }
         .crypto-card.selected {
             border-color: var(--accent-blue);
             background-color: var(--accent-blue);
-            animation: pulse 1s infinite alternate;
+            animation: pulse 1.5s infinite alternate ease-in-out;
+            box-shadow: 0 0 15px var(--accent-blue);
         }
         @keyframes pulse {
-            from { transform: scale(1); }
-            to { transform: scale(1.03); }
+            from { transform: scale(1); box-shadow: 0 0 10px rgba(0, 123, 255, 0.7); }
+            to { transform: scale(1.03); box-shadow: 0 0 20px rgba(0, 123, 255, 1); }
         }
         .crypto-card img {
             width: 40px;
             height: 40px;
             margin: 0 auto 0.5rem;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
         }
         .crypto-card span {
             display: block;
@@ -407,12 +498,12 @@
             border-radius: 0.75rem;
             padding: 1.5rem;
             text-align: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease-in-out, transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 8px var(--shadow-dark);
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-out, box-shadow 0.2s ease-out;
         }
         .stat-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
         }
         .stat-title {
             font-size: 0.875rem;
@@ -424,18 +515,12 @@
             font-weight: 700;
             color: var(--text-primary);
         }
-        .stat-row {
-            display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
 
         .electricity-bill-container {
             background-color: var(--card-bg);
             border-radius: 0.75rem;
             padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px var(--shadow-dark);
             text-align: center;
             margin-top: 1.5rem;
             transition: background-color 0.3s ease-in-out;
@@ -450,6 +535,7 @@
             font-weight: 700;
             color: var(--accent-orange);
             margin-bottom: 1rem;
+            animation: fadeInScale 0.5s ease-out;
         }
         .bill-info div {
             font-size: 1rem;
@@ -470,12 +556,13 @@
             margin: 0 auto;
             width: 80%;
             transition: background-color 0.3s ease-in-out;
+            box-shadow: inset 0 1px 3px var(--shadow-dark);
         }
         .power-usage-bar {
             height: 100%;
             background-color: var(--accent-red);
             border-radius: 9999px;
-            transition: width 0.3s ease-in-out;
+            transition: width 0.5s ease-out;
         }
         .power-text {
             position: absolute;
@@ -485,7 +572,7 @@
             font-size: 0.875rem;
             font-weight: 600;
             color: var(--text-primary);
-            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+            text-shadow: 0 0 2px var(--shadow-dark);
         }
         .power-cost {
             font-size: 1.125rem;
@@ -499,7 +586,7 @@
             background-color: var(--card-bg);
             padding: 1.5rem;
             border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px var(--shadow-dark);
             transition: background-color 0.3s ease-in-out;
         }
         .progress-info {
@@ -516,13 +603,14 @@
             height: 1rem;
             overflow: hidden;
             transition: background-color 0.3s ease-in-out;
+            box-shadow: inset 0 1px 3px var(--shadow-dark);
         }
         .progress-bar {
             height: 100%;
             background-color: var(--accent-green);
             border-radius: 9999px;
             width: 0%;
-            transition: width 0.3s ease-in-out;
+            transition: width 0.5s ease-out;
         }
         .mining-controls {
             display: flex;
@@ -551,11 +639,14 @@
             font-weight: 600;
             color: var(--text-primary);
             cursor: pointer;
-            transition: background-color 0.2s, color 0.2s;
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+            box-shadow: 0 2px 4px var(--shadow-light);
         }
         .category-btn.active, .category-btn:hover {
             background-color: var(--accent-blue);
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow-dark);
         }
 
         .hardware-inventory, .hardware-shop, .settings-section, .market-section-container {
@@ -563,8 +654,8 @@
             border-radius: 0.75rem;
             padding: 1.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease-in-out;
+            box-shadow: 0 4px 10px var(--shadow-dark);
+            transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
         .buy-multiple {
             display: flex;
@@ -586,6 +677,7 @@
             border: 1px solid var(--border-color);
             border-radius: 0.5rem;
             transition: border-color 0.3s ease-in-out;
+            box-shadow: inset 0 1px 3px var(--shadow-dark);
         }
         .inventory-container::-webkit-scrollbar, .shop-container::-webkit-scrollbar {
             width: 8px;
@@ -610,13 +702,13 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease-in-out;
+            box-shadow: 0 2px 4px var(--shadow-light);
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.3s ease-in-out, border-color 0.2s ease-in-out;
             position: relative;
         }
         .hardware-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 4px 8px var(--shadow-dark);
         }
         .hardware-card.available {
             cursor: pointer;
@@ -628,7 +720,8 @@
         .hardware-card.selected-shop-item {
             border-color: var(--accent-blue);
             background-color: var(--accent-blue);
-            animation: pulse 1s infinite alternate;
+            animation: pulse 1.5s infinite alternate ease-in-out;
+            box-shadow: 0 0 15px var(--accent-blue);
         }
         .hardware-card .hw-name {
             font-weight: 600;
@@ -664,6 +757,7 @@
             border-radius: 0.375rem;
             font-size: 0.75rem;
             font-weight: 700;
+            box-shadow: 0 1px 2px var(--shadow-dark);
         }
         .inventory-stats {
             display: flex;
@@ -693,7 +787,7 @@
             border-radius: 0.75rem;
             padding: 1.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px var(--shadow-dark);
             transition: background-color 0.3s ease-in-out;
         }
         .chart-slideshow-wrapper {
@@ -726,7 +820,7 @@
             border-radius: 0.75rem;
             padding: 1.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px var(--shadow-dark);
             transition: background-color 0.3s ease-in-out;
         }
         .assets-container {
@@ -740,12 +834,12 @@
             border-radius: 0.5rem;
             padding: 1rem;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: background-color 0.3s ease-in-out, transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px var(--shadow-light);
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-out, box-shadow 0.2s ease-out;
         }
         .asset-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 4px 8px var(--shadow-dark);
         }
         .asset-card .asset-symbol {
             font-weight: 700;
@@ -791,12 +885,12 @@
             background-color: var(--card-bg);
             border-radius: 0.75rem;
             padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease-in-out, transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 10px var(--shadow-dark);
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-out, box-shadow 0.2s ease-out;
         }
         .stats-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
         }
         .stats-list .stat-item {
             display: flex;
@@ -819,6 +913,7 @@
             margin-top: 1rem;
             color: var(--text-secondary);
             transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+            box-shadow: inset 0 1px 3px var(--shadow-dark);
         }
         .shares-console {
             font-family: 'Roboto Mono', monospace;
@@ -853,6 +948,7 @@
             margin-bottom: 0.5rem;
             color: var(--accent-green);
             font-weight: 500;
+            animation: fadeIn 0.5s ease-out forwards;
         }
         .achievement-item.locked {
             color: var(--text-secondary);
@@ -883,10 +979,10 @@
             color: var(--text-primary);
             padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 8px var(--shadow-dark);
             opacity: 0;
             transform: translateX(100%);
-            animation: slideIn 0.3s forwards, fadeOut 0.5s 2.5s forwards;
+            animation: slideIn 0.4s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94), fadeOut 0.5s 2.5s forwards;
             min-width: 200px;
             text-align: center;
             transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
@@ -924,12 +1020,15 @@
             border-radius: 0.375rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s, color 0.2s;
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
             border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px var(--shadow-light);
         }
         .theme-selector button.active, .theme-selector button:hover {
             background-color: var(--accent-blue);
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow-dark);
         }
 
         .hardware-group {
@@ -938,8 +1037,8 @@
             border: 1px solid var(--border-color);
             border-radius: 0.5rem;
             background-color: var(--card-bg);
+            box-shadow: inset 0 1px 3px var(--shadow-dark);
         }
-
         .hardware-group h4 {
             font-size: 1.25rem;
             font-weight: 600;
@@ -947,179 +1046,140 @@
             margin-bottom: 1rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 0.5rem;
+            text-shadow: 0 1px 2px var(--shadow-light);
         }
-
         .hardware-group-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 1rem;
         }
-
-    </style>
-</head>
-<body class="theme-dark">
-    <div class="container">
-        <header>
-            <h1>Crypto Mining Simulator</h1>
-            <div class="wallet">
-                <i class="fas fa-wallet"></i>
-                <span id="wallet-usd">$10000.00</span>
-                <span id="wallet-btc">0.00000000 BTC</span>
-                <span id="wallet-eth">0.00000000 ETH</span>
-                <span id="wallet-doge">0.00000000 DOGE</span>
-                <span id="wallet-ltc">0.00000000 LTC</span>
-                <span id="wallet-xmr">0.00000000 XMR</span>
-            </div>
-            <div class="level-container" id="level-display">
-                <div class="level-number">Level <span id="player-level">1</span></div>
-                <div class="level-progress-container">
-                    <div class="level-progress-bar" id="level-progress-bar" style="width: 0%"></div>
-                    <div class="level-progress-text"><span id="current-xp">0</span> / <span id="next-level-xp">100</span> XP</div>
-                </div>
-            </div>
-        </header>
-
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="mining">Mining</button>
-            <button class="tab-btn" data-tab="hardware">Hardware</button>
-            <button class="tab-btn" data-tab="stats">Stats</button>
-            <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
-            <button class="tab-btn" data-tab="settings">Settings</button>
-        </div>
-
-        <div class="tab-content">
-            <div id="mining" class="tab-pane active">
-                <div class="crypto-selection">
-                    <h2>Select Cryptocurrency</h2>
-                    <div class="crypto-cards" id="crypto-list">
-
+        .mining-pools-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .pool-card {
+            background-color: var(--input-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 8px var(--shadow-dark);
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s ease-out;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+        .pool-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        .pool-card.active-pool {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 15px var(--accent-green);
+            animation: pulse-green 1.5s infinite alternate ease-in-out;
+        }
+        @keyframes pulse-green {
+            from { box-shadow: 0 0 10px rgba(40, 167, 69, 0.7); }
+            to { box-shadow: 0 0 20px rgba(40, 167, 69, 1); }
+        }
+        .pool-card h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 0.75rem;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .pool-card p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        .pool-card .pool-actions {
+            margin-top: 1rem;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } } @keyframes slideInFromLeft { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } } @keyframes modalSlideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } } @media (max-width: 768px) { .main-content { flex-direction: column; } .sidebar { flex: none; width: 100%; order: -1; margin-bottom: 1.5rem; } .tabs { flex-direction: row; justify-content: space-around; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; } .tab-btn { text-align: center; padding: 0.8rem 1rem; flex-grow: 1; } header { flex-direction: column; align-items: flex-start; padding: 1rem 1.5rem; } header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; } .wallet { width: 100%; justify-content: center; font-size: 1rem; } .level-container { max-width: 100%; } } </style> </head> <body class="theme-dark"> <div class="dashboard-container"> <header> <h1>Crypto Mining Simulator</h1> <div class="flex flex-wrap items-center gap-4"> <div class="wallet"> <i class="fas fa-wallet"></i> <span id="wallet-usd">$10000.00</span> <span id="wallet-btc">0.00000000 BTC</span> <span id="wallet-eth">0.00000000 ETH</span> <span id="wallet-doge">0.00000000 DOGE</span> <span id="wallet-ltc">0.00000000 LTC</span> <span id="wallet-xmr">0.00000000 XMR</span> </div> <div class="level-container" id="level-display"> <div class="level-number">Level <span id="player-level">1</span></div> <div class="level-progress-container"> <div class="level-progress-bar" id="level-progress-bar" style="width: 0%"></div> <div class="level-progress-text"><span id="current-xp">0</span> / <span id="next-level-xp">100</span> XP</div> </div> </div> </div> </header> <div class="main-content"> <nav class="sidebar"> <div class="tabs"> <button class="tab-btn active" data-tab="mining"><i class="fas fa-hammer mr-2"></i>Mining</button> <button class="tab-btn" data-tab="hardware"><i class="fas fa-microchip mr-2"></i>Hardware</button> <button class="tab-btn" data-tab="market"><i class="fas fa-chart-line mr-2"></i>Market</button> <button class="tab-btn" data-tab="stats"><i class="fas fa-chart-bar mr-2"></i>Stats</button> <button class="tab-btn" data-tab="leaderboard"><i class="fas fa-trophy mr-2"></i>Leaderboard</button> <button class="tab-btn" data-tab="settings"><i class="fas fa-cog mr-2"></i>Settings</button> </div> </nav> <div class="content-area"> <div id="mining" class="tab-pane active"> <div class="crypto-selection card-section"> <h2>Select Cryptocurrency (Solo Mining)</h2> <div class="crypto-cards" id="crypto-list"> </div> <div class="mining-controls flex flex-col sm:flex-row gap-4 mt-4"> <button id="start-solo-mining-btn" class="btn primary flex-1">Start Solo Mining</button> <button id="stop-solo-mining-btn" class="btn danger flex-1" disabled>Stop Solo Mining</button> </div> </div> <div class="card-section mt-6"> <h2>Mining Pools</h2> <div class="mining-pools-container" id="mining-pools-list"> <p class="text-center text-gray-400">Loading mining pools...</p> </div> <div class="flex justify-center mt-4"> <button id="leave-pool-btn" class="btn secondary" style="display: none;">Leave Current Pool</button> </div> </div> <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6"> <div class="stat-card"> <div class="stat-title">Currently Mining</div> <div class="stat-value" id="current-mining-status">None</div> </div> <div class="stat-card"> <div class="stat-title">Hash Rate</div> <div class="stat-value" id="current-hash-rate">0 H/s</div> </div> <div class="stat-card" id="shares-contributed-card" style="display: none;"> <div class="stat-title">Shares Contributed</div> <div class="stat-value" id="shares-contributed">0</div> </div> </div> <div class="electricity-bill-container card-section"> <div class="bill-header"> <h3>Electricity Bill</h3> </div> <div class="bill-amount" id="current-bill-amount">$0.00</div> <div class="bill-info"> <div>Rate: <span id="bill-rate">$0.15/kWh</span></div> <div>Next billing: <span id="next-billing-time">-</span></div> </div> </div> <div class="power-status card-section"> <h3 class="text-center mb-4">Power Consumption</h3> <div class="power-meter" id="power-meter"> <div class="power-usage-bar" id="power-usage-bar" style="width: 0%"></div> <div class="power-text"><span id="power-consumed">0</span>W / <span id="power-capacity">0</span>W</div> </div> <div class="power-cost"> <span>Daily Electricity Cost:</span> <span id="daily-electricity-cost">$0.00</span> </div> </div> <div class="mining-progress card-section"> <div class="progress-info"> <span>Mining Progress</span> <span id="progress-percentage">0%</span> </div> <div class="progress-bar-container"> <div class="progress-bar" id="mining-progress-bar" style="width: 0%"></div> </div> </div> <div class="mining-controls flex flex-col sm:flex-row gap-4 card-section"> <input type="text" placeholder="Type your code here" id="redeem-code-input" class="flex-1"> <button class="btn primary flex-1" id="redeem-code-btn">Redeem Code</button>
                     </div>
-                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                    <div class="stat-card">
-                        <div class="stat-title">Currently Mining</div>
-                        <div class="stat-value" id="current-crypto-mining">None</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-title">Hash Rate</div>
-                        <div class="stat-value" id="current-hash-rate">0 H/s</div>
-                    </div>
-                </div>
-
-                <div class="electricity-bill-container" id="electricity-bill">
-                    <div class="bill-header">
-                        <h3>Electricity Bill</h3>
-                    </div>
-                    <div class="bill-amount" id="current-bill-amount">$0.00</div>
-                    <div class="bill-info">
-                        <div>Rate: <span id="bill-rate">$0.15/kWh</span></div>
-                        <div>Next billing: <span id="next-billing-time">-</span></div>
-                    </div>
-                </div>
-
-                <div class="power-status">
-                    <h3 class="text-center mb-4">Power Consumption</h3>
-                    <div class="power-meter" id="power-meter">
-                        <div class="power-usage-bar" id="power-usage-bar" style="width: 0%"></div>
-                        <div class="power-text"><span id="power-consumed">0</span>W / <span id="power-capacity">0</span>W</div>
-                    </div>
-                    <div class="power-cost">
-                        <span>Daily Electricity Cost:</span>
-                        <span id="daily-electricity-cost">$0.00</span>
-                    </div>
-                </div>
-
-                <div class="mining-progress">
-                    <div class="progress-info">
-                        <span>Mining Progress</span>
-                        <span id="progress-percentage">0%</span>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" id="mining-progress-bar" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <div class="mining-controls">
-                    <button id="start-mining-btn" class="btn primary">Start Mining</button>
-                    <button id="stop-mining-btn" class="btn danger" disabled>Stop Mining</button>
-                    <input type="text" placeholder="Type your code here" id="redeem-code-input">
-                    <button class="btn primary" id="redeem-code-btn">Redeem Code</button>
-                </div>
-
-                <div class="mining-log">
-                    <h3>Mining Log</h3>
-                    <div class="log-container" id="activity-log">
-                        <div class="log-entry">Welcome to Crypto Mining Simulator!</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="hardware" class="tab-pane">
-                <h2>Hardware Shop</h2>
-                <div class="hardware-categories">
-                    <button class="category-btn active" data-category="all">All</button>
-                    <button class="category-btn" data-category="gpu">GPUs</button>
-                    <button class="category-btn" data-category="asic">ASIC Miners</button>
-                    <button class="category-btn" data-category="cooling">Cooling</button>
-                    <button class="category-btn" data-category="power">Power Supply</button>
-                </div>
-
-                <div class="hardware-inventory">
-                    <h3>Your Hardware (<span id="total-owned-hardware">0</span>)</h3>
-                    <div id="inventory-grouped-container">
-                        <!-- Hardware groups will be rendered here -->
-                    </div>
-                    <div class="inventory-stats">
-                        <div class="inv-stat">
-                            <span>Total GPU Hash Rate:</span>
-                            <span id="total-gpu-hash-rate">0 MH/s</span>
-                        </div>
-                        <div class="inv-stat">
-                            <span>Total ASIC Hash Rate:</span>
-                            <span id="total-asic-hash-rate">0 TH/s</span>
-                        </div>
-                        <div class="inv-stat">
-                            <span>Total Power Usage:</span>
-                            <span id="total-power-usage-rig">0 W</span>
+                    <div class="mining-log card-section">
+                        <h3>Mining Log</h3>
+                        <div class="log-container" id="activity-log">
+                            <div class="log-entry">Welcome to Crypto Mining Simulator!</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="hardware-shop">
-                    <h3>Available Hardware</h3>
-                    <div class="buy-multiple">
-                        <button id="buy-1x-btn" class="btn primary">Buy 1x</button>
-                        <button id="buy-100x-btn" class="btn primary">Buy 100x</button>
-                        <button id="buy-1000x-btn" class="btn primary">Buy 1000x</button>
+                <div id="hardware" class="tab-pane">
+                    <div class="settings-section card-section">
+                        <h3>Power Grid Upgrade</h3>
+                        <div class="settings-option">
+                            <label for="power-grid-increase-input">Increase Capacity By (Watts):</label>
+                            <div class="settings-input-group">
+                                <input type="number" id="power-grid-increase-input" value="1000" min="100" step="100">
+                                <button id="upgrade-power-grid-btn" class="btn primary">Upgrade Grid</button>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Current Power Grid Capacity: <span id="current-power-grid-capacity">0</span>W</p>
+                            <p class="text-sm text-gray-500 mt-1" id="blackout-status-display"></p>
+                        </div>
                     </div>
-                    <div id="shop-grouped-container">
-                        <!-- Shop hardware groups will be rendered here -->
+
+                    <div class="hardware-shop-section card-section">
+                        <h2>Hardware Shop</h2>
+                        <div class="hardware-categories">
+                            <button class="category-btn active" data-category="all">All</button>
+                            <button class="category-btn" data-category="gpu">GPUs</button>
+                            <button class="category-btn" data-category="asic">ASIC Miners</button>
+                            <button class="category-btn" data-category="cooling">Cooling</button>
+                            <button class="category-btn" data-category="psu">PSU</button>
+                        </div>
+                        <div class="buy-multiple">
+                            <button id="buy-1x-btn" class="btn primary">Buy 1x</button>
+                            <button id="buy-100x-btn" class="btn primary">Buy 100x</button>
+                            <button id="buy-1000x-btn" class="btn primary">Buy 1000x</button>
+                        </div>
+                        <div id="shop-grouped-container">
+                        </div>
+                    </div>
+
+                    <div class="hardware-inventory card-section">
+                        <h3>Your Hardware (<span id="total-owned-hardware">0</span>)</h3>
+                        <div id="inventory-grouped-container">
+                        </div>
+                        <div class="inventory-stats">
+                            <div class="inv-stat">
+                                <span>Total GPU Hash Rate:</span>
+                                <span id="total-gpu-hash-rate">0 MH/s</span>
+                            </div>
+                            <div class="inv-stat">
+                                <span>Total ASIC Hash Rate:</span>
+                                <span id="total-asic-hash-rate">0 TH/s</span>
+                            </div>
+                            <div class="inv-stat">
+                                <span>Total Power Usage:</span>
+                                <span id="total-power-usage-rig">0 W</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="market-section-container">
-                    <h2>Crypto Market</h2>
-
-                    <div class="market-charts">
+                <div id="market" class="tab-pane">
+                    <div class="market-charts card-section">
+                        <h2>Crypto Market</h2>
                         <h3>Price Trends</h3>
                         <div class="chart-slideshow-wrapper">
                             <button id="prev-chart-btn" class="btn secondary px-2 py-1" disabled><i class="fas fa-chevron-left"></i></button>
                             <div class="chart-container" id="chart-slideshow-container">
-                                
+
                             </div>
                             <button id="next-chart-btn" class="btn secondary px-2 py-1" disabled><i class="fas fa-chevron-right"></i></button>
                         </div>
                     </div>
 
-                    <div class="market-assets">
+                    <div class="market-assets card-section">
                         <h3>Your Assets</h3>
                         <div class="assets-container" id="assets-container">
-
                         </div>
                     </div>
 
-                    <div class="trading-panel">
+                    <div class="trading-panel card-section">
                         <h3>Trade Cryptocurrencies</h3>
                         <div class="form-group">
                             <label for="trade-crypto-select">Cryptocurrency</label>
@@ -1136,124 +1196,123 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div id="stats" class="tab-pane">
-                <h2>Statistics</h2>
-
-                <div class="stats-grid">
-                    <div class="stats-card">
-                        <h3>Mining Stats</h3>
-                        <div class="stats-list">
-                            <div class="stat-item">
-                                <span>Total Mined:</span>
-                                <span id="total-mined">0 coins</span>
+                <div id="stats" class="tab-pane">
+                    <h2>Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stats-card">
+                            <h3>Mining Stats</h3>
+                            <div class="stats-list">
+                                <div class="stat-item">
+                                    <span>Total Mined:</span>
+                                    <span id="total-mined">0 coins</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>Mining Time:</span>
+                                    <span id="mining-time">0 hours</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>Energy Used:</span>
+                                    <span id="energy-used">0 kWh</span>
+                                </div>
                             </div>
-                            <div class="stat-item">
-                                <span>Mining Time:</span>
-                                <span id="mining-time">0 hours</span>
-                            </div>
-                            <div class="stat-item">
-                                <span>Energy Used:</span>
-                                <span id="energy-used">0 kWh</span>
+                            <div class="mining-shares">
+                                <h3>Mining Shares Console</h3>
+                                <div class="shares-console" id="shares-console">
+                                    <div class="share-line">Waiting for mining to start...</div>
+                                </div>
                             </div>
                         </div>
-                        <div class="mining-shares">
-                            <h3>Mining Shares Console</h3>
-                            <div class="shares-console" id="shares-console">
-                                <div class="share-line">Waiting for mining to start...</div>
+
+                        <div class="stats-card">
+                            <h3>Financial Stats</h3>
+                            <div class="stats-list">
+                                <div class="stat-item">
+                                    <span>Total Earnings:</span>
+                                    <span id="total-earnings">$0.00</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>Hardware Investment:</span>
+                                    <span id="hardware-investment">$0.00</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>Net Profit:</span>
+                                    <span id="net-profit">$0.00</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="stats-card">
-                        <h3>Financial Stats</h3>
-                        <div class="stats-list">
-                            <div class="stat-item">
-                                <span>Total Earnings:</span>
-                                <span id="total-earnings">$0.00</span>
-                            </div>
-                            <div class="stat-item">
-                                <span>Hardware Investment:</span>
-                                <span id="hardware-investment">$0.00</span>
-                            </div>
-                            <div class="stat-item">
-                                <span>Net Profit:</span>
-                                <span id="net-profit">$0.00</span>
+                        <div class="stats-card">
+                            <h3>Achievements</h3>
+                            <div class="achievements-list" id="achievements-list">
                             </div>
                         </div>
-                    </div>
 
-                    <div class="stats-card">
-                        <h3>Achievements</h3>
-                        <div class="achievements-list" id="achievements-list">
-                        </div>
-                    </div>
-
-                    <div class="stats-card">
-                        <h3>Game Information</h3>
-                        <div class="stats-list">
-                            <div class="stat-item">
-                                <span>Play Time:</span>
-                                <span id="play-time">0 minutes</span>
+                        <div class="stats-card">
+                            <h3>Game Information</h3>
+                            <div class="stats-list">
+                                <div class="stat-item">
+                                    <span>Play Time:</span>
+                                    <span id="play-time">0 minutes</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>Time Elapsed (Overall):</span>
+                                    <span id="time-elapsed">0 days, 0 hours</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>Save Date:</span>
+                                    <span id="save-date">Never</span>
+                                </div>
                             </div>
-                            <div class="stat-item">
-                                <span>Time Elapsed (Overall):</span>
-                                <span id="time-elapsed">0 days, 0 hours</span>
+                            <div class="save-controls">
+                                <button id="save-game-btn" class="btn primary">Save Game</button>
+                                <button id="reset-game-btn" class="btn danger">Reset Game</button>
                             </div>
-                            <div class="stat-item">
-                                <span>Save Date:</span>
-                                <span id="save-date">Never</span>
-                            </div>
-                        </div>
-                        <div class="save-controls">
-                            <button id="save-game-btn" class="btn primary">Save Game</button>
-                            <button id="reset-game-btn" class="btn danger">Reset Game</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="leaderboard" class="tab-pane">
-                <h2>Global Leaderboard</h2>
-                <div class="leaderboard-section settings-section">
-                    <div id="leaderboard-container" class="leaderboard">
-                        <p class="text-center text-gray-400">Loading leaderboard...</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="settings" class="tab-pane">
-                <h2>Settings</h2>
-                <div class="settings-section">
-                    <h3>Player Profile</h3>
-                    <div class="settings-option">
-                        <label for="player-name-input">Your Name:</label>
-                        <div class="settings-input-group">
-                            <input type="text" id="player-name-input" placeholder="Enter your name">
-                            <button id="save-name-btn" class="btn primary">Save Name</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="settings-section">
-                    <h3>Theme Selection</h3>
-                    <div class="settings-option">
-                        <label>Choose Theme:</label>
-                        <div class="theme-selector flex gap-4">
-                            <button class="theme-btn active" data-theme="dark">Dark Theme</button>
-                            <button class="theme-btn" data-theme="light">Light Theme</button>
+                <div id="leaderboard" class="tab-pane">
+                    <h2>Global Leaderboard</h2>
+                    <div class="leaderboard-section card-section">
+                        <div id="leaderboard-container" class="leaderboard">
+                            <p class="text-center text-gray-400">Loading leaderboard...</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="settings-section">
-                    <h3>Game Data</h3>
-                    <div class="settings-option">
-                        <label>Reset Game Progress:</label>
-                        <p class="text-sm text-gray-500 mb-2">Warning: This will permanently delete all your game data.</p>
-                        <button id="reset-data-btn" class="btn danger">Reset All Data</button>
+                <div id="settings" class="tab-pane">
+                    <h2>Settings</h2>
+                    <div class="settings-section card-section">
+                        <h3>Player Profile</h3>
+                        <div class="settings-option">
+                            <label for="player-name-input">Your Name:</label>
+                            <div class="settings-input-group">
+                                <input type="text" id="player-name-input" placeholder="Enter your name">
+                                <button id="save-name-btn" class="btn primary">Save Name</button>
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="settings-section card-section">
+                        <h3>Theme Selection</h3>
+                        <div class="settings-option">
+                            <label>Choose Theme:</label>
+                            <div class="theme-selector flex gap-4">
+                                <button class="theme-btn active" data-theme="dark">Dark Theme</button>
+                                <button class="theme-btn" data-theme="light">Light Theme</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section card-section">
+                        <h3>Game Data</h3>
+                        <div class="settings-option">
+                            <label>Reset Game Progress:</label>
+                            <p class="text-sm text-gray-500 mb-2">Warning: This will permanently delete all your game data.</p>
+                            <button id="reset-data-btn" class="btn danger">Reset All Data</button>
+                            </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1266,7 +1325,8 @@
             <h3 id="modal-title" class="text-2xl font-bold mb-4 text-blue-300"></h3>
             <p id="modal-message" class="text-lg mb-6"></p>
             <div class="flex justify-end">
-                <button id="modal-close-btn" class="modal-close-btn">Close</button>
+                <button id="modal-cancel-btn" class="modal-close-btn">Cancel</button>
+                <button id="modal-confirm-btn" class="modal-confirm-btn">Confirm</button>
             </div>
         </div>
     </div>
@@ -1290,6 +1350,7 @@
                     <ul>
                         <li><strong>Your Hardware:</strong> See all the GPUs, ASICs, cooling, and power supplies you own.</li>
                         <li><strong>Hardware Shop:</strong> Buy new and more powerful hardware to increase your mining efficiency.</li>
+                        <li><strong>Power Grid Upgrade:</strong> Increase your overall power capacity to run more powerful rigs!</li>
                     </ul>
                 </li>
                 <li><strong>Market Tab:</strong> Trade your mined crypto.
@@ -1311,7 +1372,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const API_BASE_URL = 'http://localhost:5003';
+        const API_BASE_URL = 'https://cryptosim.ronanapis.us';
         let userId = null;
         let playerName = "New Miner";
         let allPlayerNames = new Set();
@@ -1378,6 +1439,7 @@
         let ownedHardware = {};
         let availableCryptoTypes = [];
         let achievements = [];
+        let availablePools = [];
 
         async function fetchCryptoTypes() {
             try {
@@ -1459,19 +1521,19 @@
             const shopGroupedContainer = document.getElementById('shop-grouped-container');
             shopGroupedContainer.innerHTML = '';
 
-            const hardwareTypes = ['gpu', 'asic', 'cooling', 'power'];
+            const hardwareTypes = ['gpu', 'asic', 'cooling', 'psu'];
             const typeDisplayNames = {
                 'gpu': 'GPUs',
                 'asic': 'ASIC Miners',
                 'cooling': 'Cooling Systems',
-                'power': 'Power Supplies'
+                'psu': 'PSU'
             };
 
             const filteredAndGroupedHardware = {
                 'gpu': [],
                 'asic': [],
                 'cooling': [],
-                'power': []
+                'psu': []
             };
 
             allHardware.forEach(hw => {
@@ -1510,7 +1572,7 @@
 
                             card.innerHTML = `
                                 <div class="hw-name">${hw.name}</div>
-                                <div class="hw-type">${hw.type.toUpperCase()}</div>
+                                <div class="hw-type">${typeDisplayNames[hw.type]}</div>
                                 <div class="hw-stats">
                                     <div>${hashRateDisplay}</div>
                                     <div>Power: ${hw.powerConsumptionWatts || 0} W</div>
@@ -1539,12 +1601,12 @@
             const inventoryGroupedContainer = document.getElementById('inventory-grouped-container');
             inventoryGroupedContainer.innerHTML = '';
 
-            const hardwareTypes = ['gpu', 'asic', 'cooling', 'power'];
+            const hardwareTypes = ['gpu', 'asic', 'cooling', 'psu'];
             const typeDisplayNames = {
                 'gpu': 'GPUs',
                 'asic': 'ASIC Miners',
                 'cooling': 'Cooling Systems',
-                'power': 'Power Supplies'
+                'psu': 'PSU'
             };
 
             let totalOwned = 0;
@@ -1556,7 +1618,7 @@
                 'gpu': [],
                 'asic': [],
                 'cooling': [],
-                'power': []
+                'psu': []
             };
 
             for (const id in ownedHardware) {
@@ -1603,7 +1665,7 @@
 
                         card.innerHTML = `
                             <div class="hw-name">${hw.name}</div>
-                            <div class="hw-type">${hw.type.toUpperCase()}</div>
+                            <div class="hw-type">${typeDisplayNames[hw.type]}</div>
                             <div class="hw-quantity">${item.count}x</div>
                             <div class="hw-stats">
                                 <div>${hashRateDisplay}</div>
@@ -1653,7 +1715,7 @@
                 document.getElementById('current-hash-rate').textContent = `${displayHashRate.toFixed(2)} ${displayHashUnit}`;
 
                 document.getElementById('power-consumed').textContent = `${(state.miningRig?.totalPowerConsumption || 0).toFixed(2)}`;
-                document.getElementById('power-capacity').textContent = 'XXX';
+                document.getElementById('power-capacity').textContent = `${state.miningRig?.powerGridCapacity || 0}`;
                 document.getElementById('total-gpu-hash-rate').textContent = `${(state.miningRig?.totalHashRate || 0).toFixed(2)} MH/s`;
                 document.getElementById('total-asic-hash-rate').textContent = `${(state.miningRig?.totalAsicHashRateTH || 0).toFixed(2)} TH/s`;
                 document.getElementById('total-power-usage-rig').textContent = `${(state.miningRig?.totalPowerConsumption || 0).toFixed(2)} W`;
@@ -1678,27 +1740,54 @@
                 const xpProgress = ((state.player?.xp || 0) / (state.player?.xpToNextLevel || 1)) * 100;
                 document.getElementById('level-progress-bar').style.width = `${xpProgress}%`;
 
-                document.getElementById('current-crypto-mining').textContent = state.currentlyMiningCrypto || 'None';
+                const currentPoolId = state.player?.currentPoolId;
+                const sharesContributed = state.player?.sharesContributed || 0;
+
+                const soloMiningSection = document.querySelector('.crypto-selection');
+                const startSoloMiningBtn = document.getElementById('start-solo-mining-btn');
+                const stopSoloMiningBtn = document.getElementById('stop-solo-mining-btn');
+                const leavePoolBtn = document.getElementById('leave-pool-btn');
+                const sharesContributedCard = document.getElementById('shares-contributed-card');
+
+                if (currentPoolId) {
+                    document.getElementById('current-mining-status').textContent = `Pool: ${availablePools.find(p => p.id === currentPoolId)?.name || currentPoolId}`;
+                    soloMiningSection.classList.add('opacity-50', 'pointer-events-none');
+                    startSoloMiningBtn.disabled = true;
+                    stopSoloMiningBtn.disabled = true;
+                    leavePoolBtn.style.display = 'inline-block';
+                    sharesContributedCard.style.display = 'block';
+                    document.getElementById('shares-contributed').textContent = sharesContributed.toFixed(2);
+                } else {
+                    document.getElementById('current-mining-status').textContent = state.currentlyMiningCrypto || 'None';
+                    soloMiningSection.classList.remove('opacity-50', 'pointer-events-none');
+                    startSoloMiningBtn.disabled = false;
+                    stopSoloMiningBtn.disabled = true;
+                    leavePoolBtn.style.display = 'none';
+                    sharesContributedCard.style.display = 'none';
+                }
+
                 document.querySelectorAll('.crypto-card').forEach(c => c.classList.remove('selected'));
-                if (state.currentlyMiningCrypto && state.currentlyMiningCrypto !== 'None') {
+                if (state.currentlyMiningCrypto && state.currentlyMiningCrypto !== 'None' && !currentPoolId) {
                     const selectedCryptoCard = document.querySelector(`.crypto-card[data-crypto-symbol="${state.currentlyMiningCrypto}"]`);
                     if (selectedCryptoCard) {
                         selectedCryptoCard.classList.add('selected');
                     }
                 }
 
-                const isSimulatorActive = state.simulatorRunning || (state.currentlyMiningCrypto && state.currentlyMiningCrypto !== 'None');
+                const isSimulatorActive = state.simulatorRunning || (state.currentlyMiningCrypto && state.currentlyMiningCrypto !== 'None') || currentPoolId;
 
                 if (isSimulatorActive) {
-                    document.getElementById('start-mining-btn').disabled = true;
-                    document.getElementById('stop-mining-btn').disabled = false;
+                    if (!currentPoolId) {
+                        startSoloMiningBtn.disabled = true;
+                        stopSoloMiningBtn.disabled = false;
+                    }
                     if (!updateIntervalId) {
                         updateIntervalId = setInterval(updateUI, 1000);
                         addLogEntry("Frontend update loop started.");
                     }
                 } else {
-                    document.getElementById('start-mining-btn').disabled = false;
-                    document.getElementById('stop-mining-btn').disabled = true;
+                    startSoloMiningBtn.disabled = false;
+                    stopSoloMiningBtn.disabled = true;
                     if (updateIntervalId) {
                         clearInterval(updateIntervalId);
                         updateIntervalId = null;
@@ -1729,6 +1818,21 @@
                 document.getElementById('play-time').textContent = `${(state.playTimeMinutes || 0).toFixed(0)} minutes`;
                 document.getElementById('save-date').textContent = state.lastSaveDate ? new Date(state.lastSaveDate).toLocaleString() : 'Never';
 
+                document.getElementById('current-power-grid-capacity').textContent = `${state.miningRig?.powerGridCapacity || 0}`;
+                const blackoutDisplay = document.getElementById('blackout-status-display');
+                if (state.blackoutDuration > 0) {
+                    blackoutDisplay.textContent = `Blackout active for ${state.blackoutDuration.toFixed(1)} more hours!`;
+                    blackoutDisplay.classList.remove('text-gray-500');
+                    blackoutDisplay.classList.add('text-red-500');
+                } else {
+                    blackoutDisplay.textContent = '';
+                    blackoutDisplay.classList.remove('text-red-500');
+                    blackoutDisplay.classList.add('text-gray-500');
+                }
+
+                availablePools = state.pools || [];
+                populateMiningPools(currentPoolId);
+
                 fetchAchievements();
 
             } catch (error) {
@@ -1738,8 +1842,8 @@
                     clearInterval(updateIntervalId);
                     updateIntervalId = null;
                 }
-                document.getElementById('start-mining-btn').disabled = false;
-                document.getElementById('stop-mining-btn').disabled = true;
+                document.getElementById('start-solo-mining-btn').disabled = false;
+                document.getElementById('stop-solo-mining-btn').disabled = true;
             }
         }
 
@@ -1753,7 +1857,8 @@
                 }
                 const leaderboardData = await response.json();
                 displayLeaderboard(leaderboardData);
-            } catch (error) {
+            }
+            catch (error) {
                 console.error("Error fetching leaderboard:", error);
                 leaderboardContainer.innerHTML = '<p class="text-center text-red-400">Failed to load leaderboard. Backend unavailable.</p>';
             }
@@ -1819,13 +1924,13 @@
                 await updateUI();
                 if (result.status === 'success') {
                     addLogEntry(result.message);
-                    showNotification(`Mining ${cryptoSymbol} started!`);
+                    showNotification(`Solo mining ${cryptoSymbol} started!`);
                 } else {
-                    showModal("Error", result.message || "Failed to start simulation.");
+                    showModal("Error", result.message || "Failed to start solo mining.");
                 }
             } catch (error) {
                 console.error("Error starting simulation:", error);
-                showModal("Error", "Failed to communicate with backend to start simulation.");
+                showModal("Error", "Failed to communicate with backend to start solo mining.");
                 await updateUI();
             }
         }
@@ -1846,13 +1951,13 @@
                 await updateUI();
                 if (result.status === 'success') {
                     addLogEntry(result.message);
-                    showNotification("Mining stopped.");
+                    showNotification("Solo mining stopped.");
                 } else {
-                    showModal("Error", result.message || "Failed to stop simulation.");
+                    showModal("Error", result.message || "Failed to stop solo mining.");
                 }
             } catch (error) {
                 console.error("Error stopping simulation:", error);
-                showModal("Error", "Failed to communicate with backend to stop simulation.");
+                showModal("Error", "Failed to communicate with backend to stop solo mining.");
                 await updateUI();
             }
         }
@@ -2032,13 +2137,116 @@
         }
 
         async function resetGameData() {
-            const confirmReset = window.confirm("Are you sure you want to reset all your game data? This action cannot be undone!");
-            if (!confirmReset) {
+            showConfirmationModal(
+                "Confirm Reset",
+                "Are you sure you want to reset all your game data? This action cannot be undone!",
+                async () => {
+                    const currentUserId = getUserId();
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/reset_data`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: currentUserId })
+                        });
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        const result = await response.json();
+                        if (result.status === 'success') {
+                            addLogEntry("Game data has been reset.");
+                            showNotification("Game data reset successfully!");
+                            localStorage.removeItem('cryptoMiningSimulatorUserId');
+                            userId = null;
+                            getUserId();
+
+                            updateUI();
+                            displayOwnedHardware();
+                            displayShopHardware('all');
+                            document.getElementById('activity-log').innerHTML = '<div class="log-entry">Welcome to Crypto Mining Simulator!</div>';
+                        } else {
+                            showModal("Reset Failed", result.message || "Could not reset game data.");
+                        }
+                    } catch (error) {
+                        console.error("Error resetting game data:", error);
+                        showModal("Error", "Failed to communicate with backend to reset data.");
+                    }
+                }
+            );
+        }
+
+        async function upgradePowerGrid() {
+            const capacityIncrease = parseInt(document.getElementById('power-grid-increase-input').value);
+            if (isNaN(capacityIncrease) || capacityIncrease <= 0) {
+                showModal("Input Error", "Please enter a valid positive number for capacity increase.");
                 return;
             }
+
+            const costPerWatt = 0.5;
+            const estimatedCost = capacityIncrease * costPerWatt;
+
+            showConfirmationModal(
+                "Confirm Power Grid Upgrade",
+                `Are you sure you want to upgrade your power grid by ${capacityIncrease} Watts for $${estimatedCost.toFixed(2)}?`,
+                async () => {
+                    const currentUserId = getUserId();
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/upgrade_power_grid`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: currentUserId, capacityIncrease: capacityIncrease })
+                        });
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        const result = await response.json();
+                        if (result.status === 'success') {
+                            addLogEntry(result.message);
+                            showNotification(`Power grid upgraded by ${capacityIncrease}W!`);
+                            updateUI();
+                        } else {
+                            if (result.message && result.message.includes("Not enough USD")) {
+                                showModal("Upgrade Failed", result.message);
+                            } else {
+                                showModal("Upgrade Failed", result.message || "Could not upgrade power grid.");
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Error upgrading power grid:", error);
+                        showModal("Error", "Failed to communicate with backend to upgrade power grid.");
+                    }
+                }
+            );
+        }
+
+        async function joinMiningPool(poolId) {
             const currentUserId = getUserId();
             try {
-                const response = await fetch(`${API_BASE_URL}/reset_data`, {
+                const response = await fetch(`${API_BASE_URL}/join_pool`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, poolId: poolId })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                if (result.status === 'success') {
+                    addLogEntry(result.message);
+                    showNotification(`Joined ${availablePools.find(p => p.id === poolId)?.name || poolId}!`);
+                    updateUI();
+                } else {
+                    showModal("Join Pool Failed", result.message || "Could not join mining pool.");
+                }
+            } catch (error) {
+                console.error("Error joining pool:", error);
+                showModal("Error", "Failed to communicate with backend to join pool.");
+            }
+        }
+
+        async function leaveMiningPool() {
+            const currentUserId = getUserId();
+            try {
+                const response = await fetch(`${API_BASE_URL}/leave_pool`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: currentUserId })
@@ -2048,39 +2256,84 @@
                 }
                 const result = await response.json();
                 if (result.status === 'success') {
-                    addLogEntry("Game data has been reset.");
-                    showNotification("Game data reset successfully!");
-                    localStorage.removeItem('cryptoMiningSimulatorUserId');
-                    userId = null;
-                    getUserId();
-
+                    addLogEntry(result.message);
+                    showNotification("Left mining pool.");
                     updateUI();
-                    displayOwnedHardware();
-                    displayShopHardware('all');
-                    document.getElementById('activity-log').innerHTML = '<div class="log-entry">Welcome to Crypto Mining Simulator!</div>';
                 } else {
-                    showModal("Reset Failed", result.message || "Could not reset game data.");
+                    showModal("Leave Pool Failed", result.message || "Could not leave mining pool.");
                 }
             } catch (error) {
-                console.error("Error resetting game data:", error);
-                showModal("Error", "Failed to communicate with backend to reset data.");
+                console.error("Error leaving pool:", error);
+                showModal("Error", "Failed to communicate with backend to leave pool.");
             }
         }
 
+        function populateMiningPools(currentPoolId) {
+            const miningPoolsList = document.getElementById('mining-pools-list');
+            miningPoolsList.innerHTML = '';
 
-        const modalOverlay = document.getElementById('message-modal-overlay');
+            if (availablePools.length === 0) {
+                miningPoolsList.innerHTML = '<p class="text-center text-gray-400">No mining pools available.</p>';
+                return;
+            }
+
+            availablePools.forEach(pool => {
+                const poolCard = document.createElement('div');
+                poolCard.classList.add('pool-card');
+                if (currentPoolId === pool.id) {
+                    poolCard.classList.add('active-pool');
+                }
+
+                poolCard.innerHTML = `
+                    <h4>${pool.name}</h4>
+                    <p>Fee: ${(pool.fee * 100).toFixed(1)}%</p>
+                    <p>Strategy: ${pool.strategy}</p>
+                    <p>Target Crypto: ${pool.targetCrypto.toUpperCase()}</p>
+                    <div class="pool-actions mt-4">
+                        <button class="btn primary join-pool-btn" data-pool-id="${pool.id}" ${currentPoolId ? 'disabled' : ''}>Join Pool</button>
+                    </div>
+                `;
+                miningPoolsList.appendChild(poolCard);
+            });
+
+            document.querySelectorAll('.join-pool-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const poolId = event.target.dataset.poolId;
+                    joinMiningPool(poolId);
+                });
+            });
+        }
+
+
+        const messageModalOverlay = document.getElementById('message-modal-overlay');
         const modalTitle = document.getElementById('modal-title');
         const modalMessage = document.getElementById('modal-message');
-        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+
+        let currentConfirmCallback = null;
 
         function showModal(title, message) {
             modalTitle.textContent = title;
             modalMessage.textContent = message;
-            modalOverlay.classList.add('active');
+            modalCancelBtn.style.display = 'inline-block';
+            modalConfirmBtn.style.display = 'none';
+            messageModalOverlay.classList.add('active');
+            currentConfirmCallback = null;
+        }
+
+        function showConfirmationModal(title, message, onConfirmCallback) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalCancelBtn.style.display = 'inline-block';
+            modalConfirmBtn.style.display = 'inline-block';
+            messageModalOverlay.classList.add('active');
+            currentConfirmCallback = onConfirmCallback;
         }
 
         function hideModal() {
-            modalOverlay.classList.remove('active');
+            messageModalOverlay.classList.remove('active');
+            currentConfirmCallback = null;
         }
 
         const tutorialModalOverlay = document.getElementById('tutorial-modal-overlay');
@@ -2108,8 +2361,9 @@
             }, duration);
         }
 
-        document.getElementById('start-mining-btn').addEventListener('click', startSimulation);
-        document.getElementById('stop-mining-btn').addEventListener('click', stopSimulation);
+        document.getElementById('start-solo-mining-btn').addEventListener('click', startSimulation);
+        document.getElementById('stop-solo-mining-btn').addEventListener('click', stopSimulation);
+        document.getElementById('leave-pool-btn').addEventListener('click', leaveMiningPool);
 
         document.getElementById('buy-1x-btn').addEventListener('click', () => { setPurchaseQuantity(1); buyHardware(); });
         document.getElementById('buy-100x-btn').addEventListener('click', () => { setPurchaseQuantity(100); buyHardware(); });
@@ -2128,10 +2382,18 @@
             btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
         });
 
+        document.getElementById('upgrade-power-grid-btn').addEventListener('click', upgradePowerGrid);
 
-        modalCloseBtn.addEventListener('click', hideModal);
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) hideModal();
+
+        modalCancelBtn.addEventListener('click', hideModal);
+        modalConfirmBtn.addEventListener('click', () => {
+            if (currentConfirmCallback) {
+                currentConfirmCallback();
+            }
+            hideModal();
+        });
+        messageModalOverlay.addEventListener('click', (e) => {
+            if (e.target === messageModalOverlay) hideModal();
         });
 
         tutorialCloseBtn.addEventListener('click', hideTutorialModal);
@@ -2222,7 +2484,6 @@
                 card.addEventListener('click', () => {
                     document.querySelectorAll('.crypto-card').forEach(c => c.classList.remove('selected'));
                     card.classList.add('selected');
-                    document.getElementById('current-crypto-mining').textContent = symbol;
                 });
                 cryptoList.appendChild(card);
             });
@@ -2399,7 +2660,7 @@
             }
 
             document.querySelector('.tab-btn[data-tab="mining"]').click();
-            addLogEntry("Simulator loaded. Select a cryptocurrency and click 'Start Mining'!");
+            addLogEntry("Simulator loaded. Select a cryptocurrency and click 'Start Mining' or join a pool!");
         });
 
     </script>
